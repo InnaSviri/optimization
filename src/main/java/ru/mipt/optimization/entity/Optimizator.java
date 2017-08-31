@@ -58,12 +58,28 @@ public class Optimizator<T> {
     /**
      *
      * @param function - cost function over vector argument with elements of {@link T} type.
-     *                 Note:
-     * @param startPoint
+     *                 Note: dimension of the vector argument of the given function
+     *                 must match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
+     * @param startPoint - point to start optimization process. Note: the dimension of
+     * @throws IllegalArgumentException if dimension of the vector argument of the given function  or of startPoint
+     * does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
      */
-    public OptimizationProcedure optimize(Function<T[], Double> function, T[] startPoint){
-        if (startPoint.length != dimension)
+    public OptimizationProcedure optimize(Function<T[], Double> function, T[] startPoint) throws IllegalArgumentException{
+        if (startPoint.length != dimension
+                || function.apply(startPoint) == null)
+            throw new IllegalArgumentException("Either dimension of the given startPoint does not match Optimizator's dimension" +
+                    " or given function doues not match given startPoint");
         function.
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    public int getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(int dimension) {
+        this.dimension = dimension;
     }
 
     //-------------------------------------- inner classes -------------------------------------------------------------
