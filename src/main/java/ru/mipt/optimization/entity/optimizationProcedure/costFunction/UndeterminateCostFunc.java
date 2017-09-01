@@ -4,9 +4,7 @@ import org.jscience.mathematics.structure.Field;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.supportive.MathHelp;
 
-import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.function.Function;
 
 /**

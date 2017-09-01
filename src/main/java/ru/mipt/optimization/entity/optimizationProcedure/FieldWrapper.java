@@ -1,4 +1,4 @@
-package ru.mipt.optimization.entity.optimizationProcedure.costFunction.field;
+package ru.mipt.optimization.entity.optimizationProcedure;
 
 import javolution.text.Text;
 import org.jscience.mathematics.number.Number;
@@ -10,7 +10,7 @@ import org.jscience.mathematics.structure.Field;
  * Serves as a wrapper class to move from terms of type {@link T} to real numbers.
  * Created by Inna on 08.08.2017.
  */
-public  abstract class FieldWrapper<T> extends Number<FieldWrapper<T>> implements Field<FieldWrapper<T>> {
+public abstract class FieldWrapper<T> extends Number<FieldWrapper<T>> implements Field<FieldWrapper<T>> {
 
     private T typeInterpretation;
     private Real realInterpretation;

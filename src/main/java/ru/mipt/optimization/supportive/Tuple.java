@@ -1,4 +1,4 @@
-package ru.mipt.optimization.entity.supportive;
+package ru.mipt.optimization.supportive;
 
 import java.io.Serializable;
 

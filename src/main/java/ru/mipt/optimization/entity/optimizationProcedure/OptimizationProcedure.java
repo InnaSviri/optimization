@@ -6,8 +6,6 @@ import ru.mipt.optimization.entity.supportive.Tuple;
 import ru.mipt.optimization.entity.algorithms.Algorithm;
 
 import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.function.Function;
 
 /**

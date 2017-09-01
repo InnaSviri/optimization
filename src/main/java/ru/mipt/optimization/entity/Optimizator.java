@@ -1,12 +1,10 @@
 package ru.mipt.optimization.entity;
 
 import org.jscience.mathematics.number.Real;
-import org.jscience.mathematics.structure.Field;
 import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
-import ru.mipt.optimization.entity.optimizationProcedure.costFunction.field.FieldWrapper;
+import ru.mipt.optimization.entity.optimizationProcedure.FieldWrapper;
 
 
-import java.util.List;
 import java.util.function.Function;
 
 /** Represents an object for optimization of the given cost functions and
@@ -69,7 +67,7 @@ public class Optimizator<T> {
                 || function.apply(startPoint) == null)
             throw new IllegalArgumentException("Either dimension of the given startPoint does not match Optimizator's dimension" +
                     " or given function doues not match given startPoint");
-        function.
+        return null; // TODO
     }
 
     //------------------------------------------------------------------------------------------------------------------

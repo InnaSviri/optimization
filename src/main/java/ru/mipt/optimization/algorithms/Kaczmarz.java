@@ -1,4 +1,4 @@
-package ru.mipt.optimization.entity.algorithms;
+package ru.mipt.optimization.algorithms;
 
 import org.jscience.mathematics.vector.Vector;
 
