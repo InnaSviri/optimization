@@ -2,7 +2,7 @@ package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
 import org.jscience.mathematics.structure.Field;
 import org.jscience.mathematics.vector.Vector;
-import ru.mipt.optimization.entity.supportive.MathHelp;
+import ru.mipt.optimization.supportive.MathHelp;
 
 import java.util.Map;
 import java.util.function.Function;

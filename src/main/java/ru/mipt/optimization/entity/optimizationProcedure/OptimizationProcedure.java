@@ -1,9 +1,11 @@
 package ru.mipt.optimization.entity.optimizationProcedure;
 
+import org.jscience.mathematics.structure.Field;
 import org.jscience.mathematics.vector.Vector;
-import ru.mipt.optimization.entity.supportive.Graphics;
-import ru.mipt.optimization.entity.supportive.Tuple;
-import ru.mipt.optimization.entity.algorithms.Algorithm;
+import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
+import ru.mipt.optimization.supportive.Graphics;
+import ru.mipt.optimization.supportive.Tuple;
+import ru.mipt.optimization.algorithms.Algorithm;
 
 import java.util.LinkedList;
 import java.util.function.Function;
@@ -15,13 +17,14 @@ import java.util.function.Function;
  * @param <X> type of the domain of the cost function.
  *           Extends {@link org.jscience.mathematics.vector.Vector}
  */
-public class OptimizationProcedure <X extends Vector> {
+public class OptimizationProcedure <X extends Field<X>> {
 
+    private double optimizationTime;
     private Algorithm algorithm; // the optimization algorithm
-    private Function<X, Double> costFunction; // objective (cost) function to optimize
+    private CostFunction<X> costFunction; // objective (cost) function to optimize
     private StopCriteria stopCriteria;
 
-    private LinkedList<Tuple<X, Double>> procedurePoints = new LinkedList<>(); // decision points of optimization procedure
+    private LinkedList<Tuple<Vector<X>, Double>> procedurePoints = new LinkedList<>(); // decision points of optimization procedure
 
     /**
      * Creates new OptimizationProcedure object for given costFunction and selected optimization algorithm.
@@ -31,7 +34,7 @@ public class OptimizationProcedure <X extends Vector> {
      * @param stopCriteria condition to stop optimization procedure
      * @throws IllegalArgumentException if selected algorithm can not optimize given cost function and if any argument is null
      */
-    public OptimizationProcedure(Algorithm algorithm, Function<X,Double> costFunction, StopCriteria stopCriteria) {
+    public OptimizationProcedure(Algorithm algorithm, CostFunction<X> costFunction, StopCriteria stopCriteria) {
         if (algorithm == null || costFunction == null || stopCriteria == null)
             throw new IllegalArgumentException("Algorithm, costFunction and stopCriteria can't be null");
         if (!algorithm.isAble(costFunction))
@@ -46,9 +49,14 @@ public class OptimizationProcedure <X extends Vector> {
      * Starts optimization procedure of {@link OptimizationProcedure#costFunction costFunction}
      * by selected {@link OptimizationProcedure#algorithm algorithm}
      * @param startPoint point from which optimization algorithm starts
+     * @throws IllegalArgumentException if given startPoint is not in the domain
+     * of the {@link ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure#costFunction}
      */
-    public void start(X startPoint) {
-        procedurePoints.add(new Tuple<X, Double>(startPoint, costFunction.apply(startPoint)));
+    public void start(Vector<X> startPoint) {
+
+        if (costFunction.apply(startPoint) == null) throw new IllegalArgumentException("Start point must be in the domain " +
+                "of the given cost function! ");
+        procedurePoints.add(new Tuple<Vector<X>, Double>(startPoint, costFunction.apply(startPoint)));
         optimize();
     }
 
@@ -61,7 +69,7 @@ public class OptimizationProcedure <X extends Vector> {
      * @return {@link Tuple} of found optimal point and value of objective function in this point
      * @throws RuntimeException if optimization procedure has not been started
      */
-    public Tuple<X,Double> getOptimizedDecision() {
+    public Tuple<Vector<X>,Double> getOptimizedDecision() {
         if (procedurePoints.isEmpty()) throw new RuntimeException("Can't get optimal decision without starting optimization procedure." +
                 " Use method start(X startPoint) first");
         return procedurePoints.getLast();
@@ -79,7 +87,7 @@ public class OptimizationProcedure <X extends Vector> {
     //Returns list of cost function points in its evolution by optimization procedure order
     private LinkedList<Double> getCostFunctionEvolution() {
         LinkedList<Double> costFunctionEvolution = new LinkedList<>();
-        for (Tuple<X, Double> point: procedurePoints) costFunctionEvolution.add(point.y);
+        for (Tuple<Vector<X>, Double> point: procedurePoints) costFunctionEvolution.add(point.y);
         return costFunctionEvolution;
     }
 
@@ -87,18 +95,22 @@ public class OptimizationProcedure <X extends Vector> {
     private void optimize() {
         if (procedurePoints.isEmpty()) throw new RuntimeException("Can't optimize without start point. Use method start(X startPoint)");
 
-        Tuple<X, Double> curPoint = procedurePoints.getLast();
-        X nextPoint = algorithm.conductOneIteration(curPoint.x, costFunction);
-        procedurePoints.add(new Tuple<X, Double>(nextPoint, costFunction.apply(nextPoint)));
+        Tuple<Vector<X>, Double> curPoint = procedurePoints.getLast();
+        Vector<X> nextPoint = algorithm.conductOneIteration(curPoint.x, costFunction);
+        procedurePoints.add(new Tuple<Vector<X>, Double>(nextPoint, costFunction.apply(nextPoint)));
         if (!stopCriteria.isAchieved()) optimize();
     }
 
     //---------------------------------------- getters -----------------------------------------------------------------
+    public double getOptimizationTime() {
+        return optimizationTime;
+    }
+
     public Algorithm getAlgorithm() {
         return algorithm;
     }
 
-    public Function<X, Double> getCostFunction() {
+    public CostFunction<X> getCostFunction() {
         return costFunction;
     }
 

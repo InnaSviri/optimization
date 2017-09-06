@@ -1,6 +1,8 @@
 package ru.mipt.optimization.entity;
 
 import org.jscience.mathematics.number.Real;
+import ru.mipt.optimization.entity.inOut.Config;
+import ru.mipt.optimization.entity.inOut.Result;
 import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
 import ru.mipt.optimization.entity.optimizationProcedure.FieldWrapper;
 
@@ -18,6 +20,7 @@ public class Optimizator<T> {
     private Function<T, Double> toNumber;
     private Function<Double, T> toType;
 
+    private Config configurations;
 
     /**
      * Creates an Optimizator object to optimize cost functions of the vector argument with elements of {@link T} type.
@@ -30,12 +33,15 @@ public class Optimizator<T> {
      * @param dimension - dimension of the vector argument
      * @param toNumber - rule to convert argument of type {@link T} to its Double interpretation
      * @param toType - rule to convert argument in its Double interpretation back to the type {@link T}
+     * @param configurations - configurations of this Optimizator session
      */
-    public Optimizator(int dimension, Function<T, Double> toNumber, Function<Double, T> toType) {
+    public Optimizator(int dimension, Function<T, Double> toNumber, Function<Double, T> toType, Config configurations) {
         if (toNumber == null || toType == null)
             throw new IllegalArgumentException("Arguments in Optimizator constructor can't be null");
         this.dimension = dimension;
         setArgumentField(toNumber, toType);
+        changeCongigurations(configurations);
+
     }
 
     /**
@@ -54,6 +60,14 @@ public class Optimizator<T> {
     }
 
     /**
+     * Changes configuration of this Optimizator session
+     * @param newConfig - new configurations
+     */
+    public void changeCongigurations(Config newConfig) {
+        this.configurations = newConfig;
+    }
+
+    /**
      *
      * @param function - cost function over vector argument with elements of {@link T} type.
      *                 Note: dimension of the vector argument of the given function
@@ -62,7 +76,7 @@ public class Optimizator<T> {
      * @throws IllegalArgumentException if dimension of the vector argument of the given function  or of startPoint
      * does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
      */
-    public OptimizationProcedure optimize(Function<T[], Double> function, T[] startPoint) throws IllegalArgumentException{
+    public Result optimize(Function<T[], Double> function, T[] startPoint) throws IllegalArgumentException{
         if (startPoint.length != dimension
                 || function.apply(startPoint) == null)
             throw new IllegalArgumentException("Either dimension of the given startPoint does not match Optimizator's dimension" +
