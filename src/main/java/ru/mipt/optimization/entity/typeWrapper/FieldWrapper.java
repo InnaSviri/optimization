@@ -1,4 +1,4 @@
-package ru.mipt.optimization.entity.optimizationProcedure;
+package ru.mipt.optimization.entity.typeWrapper;
 
 import javolution.text.Text;
 import org.jscience.mathematics.number.Number;

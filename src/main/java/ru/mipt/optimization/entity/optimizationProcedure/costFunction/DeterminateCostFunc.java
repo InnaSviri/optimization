@@ -1,15 +1,14 @@
 package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
-import org.jscience.mathematics.structure.Field;
 import org.jscience.mathematics.vector.Vector;
+import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
  * Created by Inna on 21.07.2017.
  */
-public class DeterminateCostFunc <X extends Field<X>> extends CostFunction<X> {
+public class DeterminateCostFunc extends CostFunction {
 
     /* private ??? domain нужно чтобы
     и функция разрешенных значений
@@ -26,7 +25,8 @@ public class DeterminateCostFunc <X extends Field<X>> extends CostFunction<X> {
     }
 
     @Override
-    public void correctPointToDomain(Vector<X> pointNotInDomain, Vector<X> directionPoint) {
+    public void correctPointToDomain(Vector<? extends FieldWrapper> pointNotInDomain,
+                                     Vector<? extends FieldWrapper> directionPoint) {
 
     }
 }

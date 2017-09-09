@@ -3,8 +3,7 @@ package ru.mipt.optimization.entity;
 import org.jscience.mathematics.number.Real;
 import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.inOut.Result;
-import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
-import ru.mipt.optimization.entity.optimizationProcedure.FieldWrapper;
+import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 
 
 import java.util.function.Function;
