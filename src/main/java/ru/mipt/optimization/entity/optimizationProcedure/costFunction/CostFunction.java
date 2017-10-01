@@ -2,6 +2,7 @@ package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
 import java.util.function.Function;
 
+import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 
@@ -10,12 +11,12 @@ import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
  *
  * Created by Inna on 29.05.2017.
  */
-public abstract class CostFunction implements Function<Vector<? extends FieldWrapper>, Double> {
+public abstract class CostFunction implements Function<Vector<Real>, Double> {
 
     protected final Double accuracy; //interval of the domain search vision TODO replace to the config data class
-    private Function<Vector<? extends FieldWrapper>, Double> functionRule; // rule for mapping argument in its Double cost
+    private Function<Vector<Real>, Double> functionRule; // rule for mapping argument in its Double cost
 
-    public CostFunction(Function<Vector<? extends FieldWrapper>, Double> functionRule, Double accuracy) {
+    public CostFunction(Function<Vector<Real>, Double> functionRule, Double accuracy) {
         if (functionRule == null) throw new IllegalArgumentException("function rule can't be null");
         if (accuracy == null) throw new IllegalArgumentException("accuracy can't be null");
         this.functionRule = functionRule;
@@ -23,17 +24,17 @@ public abstract class CostFunction implements Function<Vector<? extends FieldWra
     }
 
     @Override
-    public Double apply(Vector<? extends FieldWrapper> vector) {
+    public Double apply(Vector<Real> vector) {
         return functionRule.apply(vector);
     }
 
     @Override
-    public <V> Function<V, Double> compose(Function<? super V, ? extends Vector<? extends FieldWrapper>> before) {
+    public <V> Function<V, Double> compose(Function<? super V, ? extends Vector<Real>> before) {
         return functionRule.compose(before);
     }
 
     @Override
-    public <V> Function<Vector<? extends FieldWrapper>, V> andThen(Function<? super Double, ? extends V> after) {
+    public <V> Function<Vector<Real>, V> andThen(Function<? super Double, ? extends V> after) {
         return functionRule.andThen(after);
     }
 
@@ -46,12 +47,12 @@ public abstract class CostFunction implements Function<Vector<? extends FieldWra
      * @param pointNotInDomain - point not in the domain of the cost function
      * @param directionPoint - point to specify the search direction
      */
-    public abstract void correctPointToDomain(Vector<? extends FieldWrapper> pointNotInDomain,
-                                              Vector<? extends FieldWrapper> directionPoint);
+    public abstract void correctPointToDomain(Vector<Real> pointNotInDomain,
+                                              Vector<Real> directionPoint);
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public Function<Vector<? extends FieldWrapper>, Double> getFunctionRule() {
+    public Function<Vector<Real>, Double> getFunctionRule() {
         return functionRule;
     }
 

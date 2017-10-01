@@ -4,6 +4,7 @@ import org.jscience.mathematics.number.Real;
 import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.inOut.Result;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
+import ru.mipt.optimization.entity.typeWrapper.TypeWrapper;
 
 
 import java.util.function.Function;
@@ -16,46 +17,32 @@ import java.util.function.Function;
 public class Optimizator<T> {
     private int dimension;
 
-    private Function<T, Double> toNumber;
-    private Function<Double, T> toType;
+    private TypeWrapper<T> typeConverter;
 
     private Config configurations;
 
     /**
      * Creates an Optimizator object to optimize cost functions of the vector argument with elements of {@link T} type.
-     * It is necessary initially to set rules {@link ru.mipt.optimization.entity.Optimizator#toNumber}
-     * and {@link ru.mipt.optimization.entity.Optimizator#toType} for
-     * {@link ru.mipt.optimization.entity.Optimizator.ArgumentField} in accordance with which
+     * It is necessary initially to set conversion rules toNumber and toType for
+     * {@link ru.mipt.optimization.entity.Optimizator#typeConverter} in accordance with which
      * conversion of argument of type {@link T} to its Double interpretation will be occurred.
-     * This rules are responsible for differentiation of the argument of the cost function in the optimization process.
+     * This rules are responsible for differentiation of the argument of the cost function in the optimization process
+     * and the construction of the argument field.
      * On them depends the search time of the optimized decision and overall optimization performance.
      * @param dimension - dimension of the vector argument
-     * @param toNumber - rule to convert argument of type {@link T} to its Double interpretation
-     * @param toType - rule to convert argument in its Double interpretation back to the type {@link T}
+     * @param toNumber - rule to convert argument of type {@link T} to its Double interpretation.
+     * @param toType - rule to convert argument in its Double interpretation back to the type {@link T}.
+     *               This rule cannot return null. It must cover conversion of all double numbers
+     *               otherwise optimization can return its decision with an error.
      * @param configurations - configurations of this Optimizator session
      */
     public Optimizator(int dimension, Function<T, Double> toNumber, Function<Double, T> toType, Config configurations) {
         if (toNumber == null || toType == null)
             throw new IllegalArgumentException("Arguments in Optimizator constructor can't be null");
         this.dimension = dimension;
-        setArgumentField(toNumber, toType);
+        typeConverter = new TypeWrapper<T>(toNumber, toType);
         changeCongigurations(configurations);
 
-    }
-
-    /**
-     * Sets rules {@link ru.mipt.optimization.entity.Optimizator#toNumber}
-     * and {@link ru.mipt.optimization.entity.Optimizator#toType} for
-     * {@link ru.mipt.optimization.entity.Optimizator.ArgumentField} in accordance with which
-     * conversion of argument of type {@link T} to its Double interpretation is occurred.
-     * This rules are responsible for differentiation of the argument of the cost function in the optimization process.
-     * On them depends the search time of the optimized decision and overall optimization performance.
-     * @param toNumber - rule to convert argument of type {@link T} to its Double interpretation
-     * @param toType - rule to convert argument in its Double interpretation back to the type {@link T}
-     */
-    public void setArgumentField(final Function<T, Double> toNumber, final Function<Double, T> toType) {
-        this.toNumber = toNumber;
-        this.toType = toType;
     }
 
     /**
@@ -75,11 +62,13 @@ public class Optimizator<T> {
      * @throws IllegalArgumentException if dimension of the vector argument of the given function  or of startPoint
      * does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
      */
-    public Result optimize(Function<T[], Double> function, T[] startPoint) throws IllegalArgumentException{
+    public Result optimize(Function<T[], Double> function, T[] startPoint) throws IllegalArgumentException {
         if (startPoint.length != dimension
                 || function.apply(startPoint) == null)
             throw new IllegalArgumentException("Either dimension of the given startPoint does not match Optimizator's dimension" +
                     " or given function doues not match given startPoint");
+
+
         return null; // TODO
     }
 
@@ -94,6 +83,7 @@ public class Optimizator<T> {
     }
 
     //-------------------------------------- inner classes -------------------------------------------------------------
+/*
 
     public class ArgumentField extends FieldWrapper<T> {
 
@@ -136,5 +126,6 @@ public class Optimizator<T> {
             return new ArgumentField(r);
         }
     }
+*/
 
 }

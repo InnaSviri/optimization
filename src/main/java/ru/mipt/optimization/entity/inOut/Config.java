@@ -9,7 +9,9 @@ import ru.mipt.optimization.algorithms.Kaczmarz;
  */
 public class Config {
 
-    private final double DEFAULT_ACCURACY = 0.01;
+    private static final double DEFAULT_ACCURACY = 0.01;
+    private static final double DEFAULT_SEARCH_RANGE = 10000;
+
     public Double accuracyOfDomainSearch;
 
     private Algorithm algorithm;
@@ -24,6 +26,14 @@ public class Config {
     public void setDefault() {
         accuracyOfDomainSearch = DEFAULT_ACCURACY;
         algorithm = new Kaczmarz();
+    }
+
+    public static double getDefaultDomainAccuracy() {
+        return DEFAULT_ACCURACY;
+    }
+
+    public static double getDefaultSearchRange() {
+        return DEFAULT_SEARCH_RANGE;
     }
 
 }

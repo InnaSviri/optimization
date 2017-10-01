@@ -1,5 +1,6 @@
 package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
+import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 
@@ -25,8 +26,8 @@ public class DeterminateCostFunc extends CostFunction {
     }
 
     @Override
-    public void correctPointToDomain(Vector<? extends FieldWrapper> pointNotInDomain,
-                                     Vector<? extends FieldWrapper> directionPoint) {
+    public void correctPointToDomain(Vector<Real> pointNotInDomain,
+                                     Vector<Real> directionPoint) {
 
     }
 }

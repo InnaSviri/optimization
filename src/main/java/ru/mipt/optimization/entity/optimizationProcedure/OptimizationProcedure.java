@@ -1,5 +1,6 @@
 package ru.mipt.optimization.entity.optimizationProcedure;
 
+import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
@@ -20,7 +21,7 @@ public class OptimizationProcedure {
     private CostFunction costFunction; // objective (cost) function to optimize
     private StopCriteria stopCriteria;
 
-    private LinkedList<Vector<? extends FieldWrapper>> procedurePoints = new LinkedList<>(); // decision points of optimization procedure
+    private LinkedList<Vector<Real>> procedurePoints = new LinkedList<>(); // decision points of optimization procedure
 
 
     /**
@@ -49,7 +50,7 @@ public class OptimizationProcedure {
      * @throws IllegalArgumentException if given startPoint is not in the domain
      * of the {@link ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure#costFunction}
      */
-    public void start(Vector<? extends FieldWrapper> startPoint) {
+    public void start(Vector<Real> startPoint) {
         if (costFunction.apply(startPoint) == null) throw new IllegalArgumentException("Start point must be in the domain " +
                 "of the given cost function! ");
         procedurePoints.add(startPoint);
@@ -65,10 +66,10 @@ public class OptimizationProcedure {
      * @return {@link Tuple} of found optimal point and value of objective function in this point
      * @throws RuntimeException if optimization procedure has not been started
      */
-    public Tuple<Vector<? extends FieldWrapper>, Double> getOptimizedDecision() {
+    public Tuple<Vector<Real>, Double> getOptimizedDecision() {
         if (procedurePoints.isEmpty()) throw new RuntimeException("Can't get optimal decision without starting optimization procedure." +
                 " Use method start(X startPoint) first");
-        return new Tuple<Vector<? extends FieldWrapper>, Double>(procedurePoints.getLast(),
+        return new Tuple<Vector<Real>, Double>(procedurePoints.getLast(),
                 costFunction.apply(procedurePoints.getLast()));
     }
 
@@ -78,8 +79,8 @@ public class OptimizationProcedure {
         if (procedurePoints.isEmpty())
             throw new RuntimeException("Can't optimize without start point. Use method start(Vector startPoint)");
 
-        Vector<? extends FieldWrapper> curPoint = procedurePoints.getLast();
-        Vector<? extends FieldWrapper> nextPoint = algorithm.conductOneIteration(curPoint, costFunction);
+        Vector<Real> curPoint = procedurePoints.getLast();
+        Vector<Real> nextPoint = algorithm.conductOneIteration(curPoint, costFunction);
         procedurePoints.add(nextPoint);
         if (!stopCriteria.isAchieved()) optimize();
     }
@@ -87,7 +88,7 @@ public class OptimizationProcedure {
     //---------------------------------------- getters -----------------------------------------------------------------
 
 
-    public LinkedList<Vector<? extends FieldWrapper>> getProcedurePoints() {
+    public LinkedList<Vector<Real>> getProcedurePoints() {
         return procedurePoints;
     }
 

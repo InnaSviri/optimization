@@ -1,5 +1,6 @@
 package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
+import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.supportive.MathHelp;
@@ -13,7 +14,7 @@ import java.util.function.Function;
  */
 public class UndeterminateCostFunc extends CostFunction  {
 
-    private Map<Vector<? extends FieldWrapper>, Vector<? extends FieldWrapper>> covered;
+    private Map<Vector<Real>, Vector<Real>> covered;
 
     /**
      * Creates new UndeterminateCostFunc with specified accuracy.
@@ -26,17 +27,17 @@ public class UndeterminateCostFunc extends CostFunction  {
 
 
     @Override
-    public void correctPointToDomain(Vector<? extends FieldWrapper> pointNotInDomain,
-                                     Vector<? extends FieldWrapper> directionPoint) {
+    public void correctPointToDomain(Vector<Real> pointNotInDomain,
+                                     Vector<Real> directionPoint) {
         if (apply(pointNotInDomain) != null) throw new IllegalArgumentException("argument pointNotInDomain " +
                 "can't be in the domain of the function");
         domainSearch(pointNotInDomain, directionPoint, 1);
     }
 
     // writes in variable "in" nearest to the "out" domain point
-    private void domainSearch(Vector<? extends FieldWrapper> out, Vector<? extends FieldWrapper> in, int iteration) {
+    private void domainSearch(Vector<Real> out, Vector<Real> in, int iteration) {
         Double curDistance = MathHelp.getDistance(out,in) /(2*iteration);
-        Vector<? extends FieldWrapper> curPoint = MathHelp.addDistance(out,curDistance);
+        Vector<Real> curPoint = MathHelp.addDistance(out,curDistance);
         if (apply(curPoint) != null) {
             in = curPoint;
             iteration = 1;
