@@ -1,12 +1,18 @@
 package ru.mipt.optimization.entity;
 
 import org.jscience.mathematics.number.Real;
+import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.inOut.Result;
+import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
+import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
+import ru.mipt.optimization.entity.optimizationProcedure.costFunction.UndeterminateCostFunc;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.entity.typeWrapper.TypeWrapper;
 
 
+import java.lang.reflect.Array;
+import java.util.List;
 import java.util.function.Function;
 
 /** Represents an object for optimization of the given cost functions and
@@ -34,13 +40,16 @@ public class Optimizator<T> {
      * @param toType - rule to convert argument in its Double interpretation back to the type {@link T}.
      *               This rule cannot return null. It must cover conversion of all double numbers
      *               otherwise optimization can return its decision with an error.
+     * @param tClass - Class of the type {@link T} (to get round type erasure).
      * @param configurations - configurations of this Optimizator session
      */
-    public Optimizator(int dimension, Function<T, Double> toNumber, Function<Double, T> toType, Config configurations) {
-        if (toNumber == null || toType == null)
+    public Optimizator(int dimension, Function<T, Double> toNumber, Function<Double, T> toType, 
+                       Class<T> tClass, Config configurations) {
+        if (toNumber == null || toType == null
+                || tClass == null )
             throw new IllegalArgumentException("Arguments in Optimizator constructor can't be null");
         this.dimension = dimension;
-        typeConverter = new TypeWrapper<T>(toNumber, toType);
+        typeConverter = new TypeWrapper<T>(toNumber, toType, tClass);
         changeCongigurations(configurations);
 
     }
@@ -50,6 +59,7 @@ public class Optimizator<T> {
      * @param newConfig - new configurations
      */
     public void changeCongigurations(Config newConfig) {
+        if (configurations == null) throw new IllegalArgumentException("Configurations can't be null!");
         this.configurations = newConfig;
     }
 
@@ -58,18 +68,29 @@ public class Optimizator<T> {
      * @param function - cost function over vector argument with elements of {@link T} type.
      *                 Note: dimension of the vector argument of the given function
      *                 must match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
-     * @param startPoint - point to start optimization process. Note: the dimension of
-     * @throws IllegalArgumentException if dimension of the vector argument of the given function  or of startPoint
-     * does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
+     * @param startPoints - list of points to start optimization process.
+     *                    Note: the dimension of given points
+     *                    must match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
+     * @return results of optimization for all given start points
+     * @throws IllegalArgumentException if dimension of the vector argument of the given function  or of some point
+     * in startPoints list does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
      */
-    public Result optimize(Function<T[], Double> function, T[] startPoint) throws IllegalArgumentException {
-        if (startPoint.length != dimension
-                || function.apply(startPoint) == null)
-            throw new IllegalArgumentException("Either dimension of the given startPoint does not match Optimizator's dimension" +
-                    " or given function doues not match given startPoint");
+    public Result optimize(Function<T[], Double> function, List<T[]> startPoints) throws IllegalArgumentException {
 
+        OptimizationProcedure procedure = new OptimizationProcedure(configurations.getAlgorithm(),
+                createCostFunction(function), configurations.getStopCriteria());
+        Result result = new Result<T>(procedure, typeConverter);
 
-        return null; // TODO
+        for (T[] startPoint: startPoints) {
+            if (startPoint.length != dimension || function.apply(startPoint) == null)
+                throw new IllegalArgumentException("Either dimension of the given startPoint does not match Optimizator's dimension" +
+                        " or given function does not match given startPoint");
+
+            procedure.start(typeConverter.convertPoint(startPoint));
+            result.updateResults();
+        }
+
+        return result;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -82,6 +103,17 @@ public class Optimizator<T> {
         this.dimension = dimension;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    
+    //// TODO: 03.10.2017 change to consider determinate or undeterminate cost function
+    private CostFunction createCostFunction(final Function<T[], Double> initialFunc) {
+        Function<Vector<Real>, Double> funcReal = new Function<Vector<Real>, Double>() {
+            @Override
+            public Double apply(Vector<Real> realVector) {
+                return initialFunc.apply(typeConverter.convertPoint(realVector));
+            }};
+        return new UndeterminateCostFunc(funcReal, configurations.accuracyOfDomainSearch);
+    }
     //-------------------------------------- inner classes -------------------------------------------------------------
 /*
 

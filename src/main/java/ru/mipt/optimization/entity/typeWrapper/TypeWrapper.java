@@ -1,10 +1,16 @@
 package ru.mipt.optimization.entity.typeWrapper;
 
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import org.jscience.mathematics.number.Real;
+import org.jscience.mathematics.vector.DenseVector;
+import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.inOut.Config;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -20,9 +26,10 @@ public class TypeWrapper<T> {
 
     final Function<T, Real> toRealRule;
     final Function<Real, T> toTypeRule;
+    final Class<T> tClass;// awful thing to get round type erasure
 
-    public TypeWrapper(final Function<T, Double> toRealRule, final Function<Double, T> toTypeRule) {
-        if (toRealRule == null || toTypeRule == null)
+    public TypeWrapper(final Function<T, Double> toRealRule, final Function<Double, T> toTypeRule, Class<T> tClass) {
+        if (toRealRule == null || toTypeRule == null || tClass == null)
             throw new IllegalArgumentException("Arguments in TypeWrapper constructor can't be null");
 
         this.toRealRule = new Function<T, Real>() {
@@ -37,6 +44,8 @@ public class TypeWrapper<T> {
                 return toTypeRule.apply(real.doubleValue());
             }
         };
+
+        this.tClass = tClass;
     }
 
     /**
@@ -73,6 +82,20 @@ public class TypeWrapper<T> {
     }
 
 
+    public T[] convertPoint(@NotNull Vector<Real> realPoint) {
+        if (realPoint == null) throw new IllegalArgumentException("Can't convert null point!");
+
+        T[] a = (T[]) Array.newInstance(tClass, realPoint.getDimension());
+        for (int i = 0; i < realPoint.getDimension(); i++ ) a[i] = convert(realPoint.get(i));
+        return a;
+    }
+
+    public Vector<Real> convertPoint(@NotNull T[] tPoint) {
+        if (tPoint == null) throw new IllegalArgumentException("Can't convert null point!");
+        List<Real> l = new ArrayList(tPoint.length);
+        for(T t: tPoint) l.add(convert(t));
+        return DenseVector.valueOf(l);
+    }
 
 
     // Calculates type interpretation of the given Real number with the help of toTypeRule.

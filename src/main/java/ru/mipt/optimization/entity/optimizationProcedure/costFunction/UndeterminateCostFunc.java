@@ -21,7 +21,7 @@ public class UndeterminateCostFunc extends CostFunction  {
      * @param functionRule - rule for mapping X in its Double cost
      * @param accuracy - interval of domain search vision
      */
-    public UndeterminateCostFunc(Function functionRule, Double accuracy) {
+    public UndeterminateCostFunc(Function<Vector<Real>, Double> functionRule, Double accuracy) {
         super(functionRule, accuracy);
     }
 

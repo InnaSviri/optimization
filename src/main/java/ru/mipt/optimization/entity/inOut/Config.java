@@ -2,6 +2,7 @@ package ru.mipt.optimization.entity.inOut;
 
 import ru.mipt.optimization.algorithms.Algorithm;
 import ru.mipt.optimization.algorithms.Kaczmarz;
+import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
 
 /**
  * Represents the configurations of the optimization procedure
@@ -15,10 +16,18 @@ public class Config {
     public Double accuracyOfDomainSearch;
 
     private Algorithm algorithm;
+    private StopCriteria stopCriteria;
 
 
     {setDefault();}
 
+    public Algorithm getAlgorithm() {
+        return algorithm;
+    }
+
+    public StopCriteria getStopCriteria() {
+        return stopCriteria;
+    }
 
     /**
      * Sets default configurations including static parameters.
