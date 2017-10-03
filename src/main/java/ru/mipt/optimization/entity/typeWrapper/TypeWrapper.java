@@ -62,7 +62,13 @@ public class TypeWrapper<T> {
      */
     public @Nullable Real convert(T t) {
         Real realInterpretation = toRealMap.get(t);
-        if (realInterpretation == null) realInterpretation = toRealRule.apply(t);
+        if (realInterpretation == null) {
+            realInterpretation = toRealRule.apply(t);
+            if (realInterpretation != null) {
+                toRealMap.put(t, realInterpretation);
+                toTypeMap.put(realInterpretation, t);
+            }
+        }
         return realInterpretation;
     }
 
@@ -78,6 +84,10 @@ public class TypeWrapper<T> {
         while (typeInterpretation == null && i < Config.getDefaultSearchRange()/Config.getDefaultDomainAccuracy()) {
             typeInterpretation = toTypeRule.apply(r.plus(Real.valueOf(Config.getDefaultDomainAccuracy()*i)));
             i = (i + Integer.signum(i)) *(-1);
+        }
+        if (typeInterpretation != null) {
+            toTypeMap.put(r,typeInterpretation);
+            toRealMap.put(typeInterpretation,r);
         }
         return typeInterpretation;
     }

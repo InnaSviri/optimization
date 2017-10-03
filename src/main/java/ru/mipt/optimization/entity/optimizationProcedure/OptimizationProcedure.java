@@ -10,15 +10,15 @@ import ru.mipt.optimization.algorithms.Algorithm;
 import java.util.LinkedList;
 
 /**
- * Represents an optimization procedure for the given cost function.
+ * Represents an optimization procedure for the given cost function by the given algorithm.
  * Looks for an extremum of the cost function on the vector search space using given optimization algorithm.
  * Created by Inna on 28.02.2017.
  */
 public class OptimizationProcedure {
 
-    private double optimizationTime;
-    private Algorithm algorithm; // the optimization algorithm
-    private CostFunction costFunction; // objective (cost) function to optimize
+    private Timer timer = new Timer();
+    private final Algorithm algorithm; // the optimization algorithm
+    private final CostFunction costFunction; // objective (cost) function to optimize
     private StopCriteria stopCriteria;
 
     private LinkedList<Vector<Real>> procedurePoints = new LinkedList<>(); // decision points of optimization procedure
@@ -76,6 +76,8 @@ public class OptimizationProcedure {
 
     //optimizes costFunction using algorithm and stopCriteria
     private void optimize() {
+        timer.start();
+
         if (procedurePoints.isEmpty())
             throw new RuntimeException("Can't optimize without start point. Use method start(Vector startPoint)");
 
@@ -83,6 +85,8 @@ public class OptimizationProcedure {
         Vector<Real> nextPoint = algorithm.conductOneIteration(curPoint, costFunction);
         procedurePoints.add(nextPoint);
         if (!stopCriteria.isAchieved()) optimize();
+
+        timer.stop();
     }
 
     //---------------------------------------- getters -----------------------------------------------------------------
@@ -93,7 +97,9 @@ public class OptimizationProcedure {
     }
 
     public double getOptimizationTime() {
-        return optimizationTime;
+        if (timer.getMemoredTime() == 0) throw new RuntimeException("Timer hasn't been started properly. " +
+                "May be you forgot to start optimization procedure? Use method start(Vector startPoint).");
+        return timer.getMemoredTime();
     }
 
     public Algorithm getAlgorithm() {
@@ -106,5 +112,27 @@ public class OptimizationProcedure {
 
     public StopCriteria getStopCriteria() {
         return stopCriteria;
+    }
+
+    //---------------------------------------------inner----------------------------------------------------------------
+
+    private class Timer {
+        private long startTime = 0;
+        private long endTime = 0;
+
+        public Timer() {}
+
+        public void start(){
+            startTime = System.nanoTime();
+            endTime = 0;
+        }
+
+        public void stop(){
+            endTime = System.nanoTime();
+        }
+
+        public double getMemoredTime() {
+            return (startTime != 0 && endTime != 0) ? (double) (endTime - startTime)/1000000000 : 0;
+        }
     }
 }
