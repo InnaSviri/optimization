@@ -12,7 +12,7 @@ import ru.mipt.optimization.entity.typeWrapper.TypeWrapper;
 
 
 import java.lang.reflect.Array;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 /** Represents an object for optimization of the given cost functions and
@@ -22,10 +22,10 @@ import java.util.function.Function;
  */
 public class Optimizator<T> {
     private int dimension;
-
     private TypeWrapper<T> typeConverter;
-
     private Config configurations;
+
+    private History history = new History();
 
     /**
      * Creates an Optimizator object to optimize cost functions of the vector argument with elements of {@link T} type.
@@ -77,8 +77,7 @@ public class Optimizator<T> {
      */
     public Result optimize(Function<T[], Double> function, List<T[]> startPoints) throws IllegalArgumentException {
 
-        OptimizationProcedure procedure = new OptimizationProcedure(configurations.getAlgorithm(),
-                createCostFunction(function), configurations.getStopCriteria());
+        OptimizationProcedure procedure = new OptimizationProcedure(createCostFunction(function), configurations);
         Result result = new Result<T>(procedure, typeConverter);
 
         for (T[] startPoint: startPoints) {
@@ -90,6 +89,7 @@ public class Optimizator<T> {
             result.updateResults();
         }
 
+        history.results.put(configurations,result);
         return result;
     }
 
@@ -114,8 +114,72 @@ public class Optimizator<T> {
             }};
         return new UndeterminateCostFunc(funcReal, configurations.accuracyOfDomainSearch);
     }
+
     //-------------------------------------- inner classes -------------------------------------------------------------
-/*
+
+    /**
+     * Stores results of this Optimizator's work
+     */
+    public class History {
+        Map<Config, Result> results = new HashMap<>();
+
+        /**
+         * Returns all results of this Optimizator's work sorted by given parameters
+         * If both parameters byFinalDecision and byTime are true sorts by the best cost function first and then by time.
+         * @param byFinalDecision if true sorts by the best cost function of the final decision
+         * @param  byTime if true sorts by the best time of the final decision
+         * @return all results of this Optimizator's work sorted by given parameters
+         */
+        public LinkedList<Result> getSortedResults(boolean byFinalDecision, boolean byTime) {
+            LinkedList<Result> resultsToSort = new LinkedList<>(results.values());
+            Collections.sort(resultsToSort, getComparator(byFinalDecision, byTime));
+            return resultsToSort;
+        }
+
+        /**
+         * Returns history of all results of this Optimizator's work mapped to its configurations
+         * @return history of all results of this Optimizator's work mapped to its configurations
+         */
+        public Map<Config, Result> getResultHistory() { return results;}
+
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        private Comparator<Result> getComparator(final boolean byFinalDecision, final boolean byTime) {
+            return new Comparator<Result>() {
+                @Override
+                public int compare(Result o1, Result o2) {
+                    int result = 0;
+                    if (o1.getSortedResults(byFinalDecision, byTime).isEmpty()
+                            && !o2.getSortedResults(byFinalDecision, byTime).isEmpty()) {
+                        result = -1;
+                    } else if (o2.getSortedResults(byFinalDecision, byTime).isEmpty()
+                            && !o1.getSortedResults(byFinalDecision, byTime).isEmpty()) {
+                        result = 1;
+                    } else if (!o2.getSortedResults(byFinalDecision, byTime).isEmpty()
+                            && !o1.getSortedResults(byFinalDecision, byTime).isEmpty()) {
+
+                        List<Result.OneShot> shots1 = o1.getSortedResults(byFinalDecision, byTime);
+                        List<Result.OneShot> shots2 = o2.getSortedResults(byFinalDecision, byTime);
+                        Map.Entry<T[], Double> final1 = shots1.get(0).finalDecision;
+                        Map.Entry<T[], Double> final2 = shots2.get(0).finalDecision;
+                        Double time1 = shots1.get(0).time;
+                        Double time2 = shots2.get(0).time;
+
+                        if (byFinalDecision) result = Double.compare(final1.getValue(),
+                                final2.getValue());
+                        if (result == 0 && byTime) result = Double.compare(time1, time2);
+                    }
+
+                    return result;
+
+
+                }
+            };
+        }
+    }
+
+    /*
 
     public class ArgumentField extends FieldWrapper<T> {
 

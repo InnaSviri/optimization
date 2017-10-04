@@ -13,28 +13,53 @@ public class Config {
     private static final double DEFAULT_ACCURACY = 0.01;
     private static final double DEFAULT_SEARCH_RANGE = 10000;
 
-    public Double accuracyOfDomainSearch;
+    public final Double accuracyOfDomainSearch;
 
-    private Algorithm algorithm;
-    private StopCriteria stopCriteria;
+    public final Algorithm algorithm;
+    public final StopCriteria stopCriteria;
 
+    /**
+     * Creates Config object with given parameters
+     * @param accuracyOfDomainSearch - accuracy with which the search of domain points will be performed
+     * @param algorithm - selected and tuned optimization algorithm
+     * @param stopCriteria - condition to stop optimization procedure
+     */
+    public Config(Double accuracyOfDomainSearch, Algorithm algorithm, StopCriteria stopCriteria) {
+        if (accuracyOfDomainSearch == null || algorithm == null || stopCriteria == null)
+            throw new IllegalArgumentException("Arguments in Config constructor can't be null!");
 
-    {setDefault();}
-
-    public Algorithm getAlgorithm() {
-        return algorithm;
-    }
-
-    public StopCriteria getStopCriteria() {
-        return stopCriteria;
+        this.accuracyOfDomainSearch = accuracyOfDomainSearch;
+        this.algorithm = algorithm;
+        this.stopCriteria = stopCriteria;
     }
 
     /**
-     * Sets default configurations including static parameters.
+     * Creates Cofig object with default configurations.
      */
-    public void setDefault() {
+    public Config() {
         accuracyOfDomainSearch = DEFAULT_ACCURACY;
         algorithm = new Kaczmarz();
+        stopCriteria = new StopCriteria();
+    }
+
+    /**
+     * Creates Config object with given parameters and default accuracy of the domain search
+     * @param algorithm - selected and tuned optimization algorithm
+     * @param stopCriteria - condition to stop optimization procedure
+     */
+    public Config(Algorithm algorithm, StopCriteria stopCriteria) {
+        accuracyOfDomainSearch = DEFAULT_ACCURACY;
+        this.algorithm = algorithm;
+        this.stopCriteria = stopCriteria;
+    }
+
+    {setDefault();}
+
+    /**
+     *
+     */
+    public void setDefault() {
+
     }
 
     public static double getDefaultDomainAccuracy() {

@@ -3,7 +3,6 @@ package ru.mipt.optimization.entity.inOut;
 import com.sun.istack.internal.NotNull;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.jscience.mathematics.number.Real;
-import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.algorithms.Algorithm;
 import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
@@ -11,7 +10,6 @@ import ru.mipt.optimization.entity.typeWrapper.TypeWrapper;
 import ru.mipt.optimization.supportive.Graphics;
 import ru.mipt.optimization.supportive.Tuple;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 
@@ -22,22 +20,20 @@ import java.util.function.Function;
  */
 public class Result<T> {
 
-    private final Algorithm algorithm;
     private OptimizationProcedure optimizationProcedure; //
     private Map<T[], OneShot> allStartsResults = new HashMap<>();
 
     private final Parser parser;
-    private MultiKeyMap<Boolean, LinkedList<OneShot>> sortedResults = new MultiKeyMap<Boolean, LinkedList<OneShot>>();
+    private MultiKeyMap<Boolean, LinkedList<Result.OneShot>> sortedResults = new MultiKeyMap<Boolean, LinkedList<OneShot>>();
 
     /**
      * Creates empty Result object
      * @param optimizationProcedure - optimization procedure to get results from.
-     *                              Can be raw, but it must be started before {@link Result#updateResults()} is used.
+     *                              Can be raw, but it must be started before method {@link Result#updateResults()} is used.
      * @param converter - converter from type {@link T} to Real and conversely.
      */
     public Result(OptimizationProcedure optimizationProcedure, TypeWrapper<T> converter) {
         if (optimizationProcedure==null) throw new IllegalArgumentException("optimizationProcedure can't be null");
-        this.algorithm = optimizationProcedure.getAlgorithm();
         this.optimizationProcedure = optimizationProcedure;
         this.parser = new Parser(converter);
     }
@@ -153,7 +149,7 @@ public class Result<T> {
      * @param  byTime if true sorts by the best time of the final decision
      */
     public void visualizeProcedure(boolean byFinalDecision, boolean byTime) {
-        List<Double> points = new ArrayList<>();
+        List<Double> points = new ArrayList<Double>();
         if (getSortedResults(false, true).peek() != null)
             points.addAll(getSortedResults(false, true).peek().optimizationProcedureEvolution.values());
         Graphics.drawPlot(points);
@@ -166,10 +162,10 @@ public class Result<T> {
      * @param byTime if true sorts by the best time of the final decision
      * @return all starts of optimization procedure sorted by given parameters
      */
-    public LinkedList<OneShot> getSortedResults(boolean byFinalDecision, boolean byTime) {
-        LinkedList<OneShot> allStarts = sortedResults.get(byFinalDecision, byTime);
+    public LinkedList<Result.OneShot> getSortedResults(boolean byFinalDecision, boolean byTime) {
+        LinkedList<Result.OneShot> allStarts = sortedResults.get(byFinalDecision, byTime);
         if (allStarts == null) {
-            allStarts = new LinkedList<>(allStartsResults.values());
+            allStarts = new LinkedList<Result.OneShot>(allStartsResults.values());
             if (!allStarts.isEmpty()) {
                 Collections.sort(allStarts, getResultsComparator(byFinalDecision, byTime));
                 sortedResults.put(byFinalDecision, byTime, allStarts);
@@ -180,8 +176,8 @@ public class Result<T> {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    public Algorithm getAlgorithm() {
-        return algorithm;
+    public Config getConfigurations() {
+        return optimizationProcedure.getConfigurations();
     }
 
     public TypeWrapper<T> getConverter() {
@@ -199,7 +195,7 @@ public class Result<T> {
 
    //------------------------------------------------------------------------------------------------------------------
 
-    private Comparator<OneShot> getResultsComparator(final boolean byFinalDecision, final boolean byTime) {
+    private Comparator<Result.OneShot> getResultsComparator(final boolean byFinalDecision, final boolean byTime) {
 
         return new Comparator<OneShot>() {
             @Override
@@ -221,10 +217,10 @@ public class Result<T> {
      * Represents result of the one start of the optimizationProcedure
      */
     public class OneShot {
-        final T[] startPoint;
-        final Double time;
-        final Map.Entry<T[], Double> finalDecision;
-        final LinkedHashMap<T[], Double> optimizationProcedureEvolution;
+        public final T[] startPoint;
+        public final Double time;
+        public final Map.Entry<T[], Double> finalDecision;
+        public final LinkedHashMap<T[], Double> optimizationProcedureEvolution;
 
         public OneShot() {
             this.finalDecision = parser.parseFinalDecision(); // if optimization procedure has't been started

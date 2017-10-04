@@ -2,6 +2,7 @@ package ru.mipt.optimization.entity.optimizationProcedure;
 
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
+import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
 import ru.mipt.optimization.supportive.Tuple;
@@ -17,35 +18,35 @@ import java.util.LinkedList;
 public class OptimizationProcedure {
 
     private Timer timer = new Timer();
-    private final Algorithm algorithm; // the optimization algorithm
+    private final Config config; // configurations (selected optimization algorithm and condition to stop optimization procedure)
     private final CostFunction costFunction; // objective (cost) function to optimize
-    private StopCriteria stopCriteria;
 
     private LinkedList<Vector<Real>> procedurePoints = new LinkedList<>(); // decision points of optimization procedure
 
 
     /**
-     * Creates new OptimizationProcedure object for given costFunction and selected optimization algorithm.
+     * Creates new OptimizationProcedure object for given costFunction
+     * and selected configurations (optimization algorithm, stop criteria).
      * Note: selected algorithm should be able to deal with given costFunction, otherwise the IllegalArgumentException is thrown
-     * @param algorithm selected optimization algorithm
      * @param costFunction function to optimize
-     * @param stopCriteria condition to stop optimization procedure
+     * @param config configurations of optimization procedure,
+     *               including selected optimization algorithm and condition to stop optimization procedure
      * @throws IllegalArgumentException if selected algorithm can not optimize given cost function and if any argument is null
      */
-    public OptimizationProcedure(Algorithm algorithm, CostFunction costFunction, StopCriteria stopCriteria) {
-        if (algorithm == null || costFunction == null || stopCriteria == null)
-            throw new IllegalArgumentException("Algorithm, costFunction and stopCriteria can't be null");
-        if (!algorithm.isAble(costFunction))
-            throw new IllegalArgumentException(" Algorithm " + algorithm.getName() + " can not optimize given cost function" );
+    public OptimizationProcedure(CostFunction costFunction, Config config) {
+        if (costFunction == null || config == null)
+            throw new IllegalArgumentException("CostFunction and config can't be null");
+        if (!config.algorithm.isAble(costFunction))
+            throw new IllegalArgumentException(" Algorithm " + config.algorithm.getName()
+                    + " can not optimize given cost function" );
 
-        this.algorithm = algorithm;
+        this.config = config;
         this.costFunction = costFunction;
-        this.stopCriteria = stopCriteria;
     }
 
     /**
      * Starts optimization procedure of {@link OptimizationProcedure#costFunction costFunction}
-     * by selected {@link OptimizationProcedure#algorithm algorithm}
+     * with selected {@link OptimizationProcedure#config configurations}
      * @param startPoint point from which optimization algorithm starts
      * @throws IllegalArgumentException if given startPoint is not in the domain
      * of the {@link ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure#costFunction}
@@ -60,7 +61,7 @@ public class OptimizationProcedure {
     /**
      * Returns optimized decision,
      * i.e. the maximum of {@link OptimizationProcedure#costFunction costFunction}
-     * after applying optimization {@link OptimizationProcedure#algorithm algorithm}.
+     * after applying optimization algorithm from {@link OptimizationProcedure#config configurations}.
      * Note: it is necessary to start optimization procedure first,
      * i.e. to use {@link OptimizationProcedure#start(Vector)}  method.
      * @return {@link Tuple} of found optimal point and value of objective function in this point
@@ -82,9 +83,9 @@ public class OptimizationProcedure {
             throw new RuntimeException("Can't optimize without start point. Use method start(Vector startPoint)");
 
         Vector<Real> curPoint = procedurePoints.getLast();
-        Vector<Real> nextPoint = algorithm.conductOneIteration(curPoint, costFunction);
+        Vector<Real> nextPoint = config.algorithm.conductOneIteration(curPoint, costFunction);
         procedurePoints.add(nextPoint);
-        if (!stopCriteria.isAchieved()) optimize();
+        if (!config.stopCriteria.isAchieved()) optimize();
 
         timer.stop();
     }
@@ -103,7 +104,7 @@ public class OptimizationProcedure {
     }
 
     public Algorithm getAlgorithm() {
-        return algorithm;
+        return config.algorithm;
     }
 
     public CostFunction getCostFunction() {
@@ -111,8 +112,10 @@ public class OptimizationProcedure {
     }
 
     public StopCriteria getStopCriteria() {
-        return stopCriteria;
+        return config.stopCriteria;
     }
+
+    public Config getConfigurations() { return config;}
 
     //---------------------------------------------inner----------------------------------------------------------------
 
