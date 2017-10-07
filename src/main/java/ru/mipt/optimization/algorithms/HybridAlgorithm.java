@@ -22,7 +22,7 @@ public abstract class HybridAlgorithm implements Algorithm{
 
     /**
      * Returns the list of pure optimization algorithms to mix in hybrid variation
-     * @return
+     * @return the list of pure optimization algorithms to mix in hybrid variation
      */
     abstract List<PureAlgorithm> getPureAlgorithms();
 
