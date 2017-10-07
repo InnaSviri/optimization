@@ -59,7 +59,7 @@ public class Optimizator<T> {
      * @param newConfig - new configurations
      */
     public void changeCongigurations(Config newConfig) {
-        if (configurations == null) throw new IllegalArgumentException("Configurations can't be null!");
+        if (newConfig == null) throw new IllegalArgumentException("Configurations can't be null!");
         this.configurations = newConfig;
     }
 

@@ -1,5 +1,6 @@
 package ru.mipt.optimization.algorithms;
 
+import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 public abstract class HybridAlgorithm implements Algorithm{
 
     @Override
-    public <X extends Vector> X conductOneIteration(X x, Function<X,Double> function) {
+    public Vector<Real> conductOneIteration(Vector<Real> x, Function<Vector<Real>,Double> function) {
         for (PureAlgorithm p: getPureAlgorithms()) p.conductOneIteration(x, function);
         //TODO
         return null;

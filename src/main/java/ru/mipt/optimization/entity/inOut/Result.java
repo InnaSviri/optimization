@@ -24,7 +24,7 @@ public class Result<T> {
     private Map<T[], OneShot> allStartsResults = new HashMap<>();
 
     private final Parser parser;
-    private MultiKeyMap<Boolean, LinkedList<Result.OneShot>> sortedResults = new MultiKeyMap<Boolean, LinkedList<OneShot>>();
+    private MultiKeyMap<Boolean, LinkedList<Result.OneShot>> sortedResults = new MultiKeyMap<Boolean, LinkedList<Result.OneShot>>();
 
     /**
      * Creates empty Result object
@@ -197,13 +197,15 @@ public class Result<T> {
 
     private Comparator<Result.OneShot> getResultsComparator(final boolean byFinalDecision, final boolean byTime) {
 
-        return new Comparator<OneShot>() {
+        return new Comparator<Result.OneShot>() {
             @Override
-            public int compare(OneShot shot1, OneShot shot2) {
+            public int compare(Result.OneShot shot1, Result.OneShot shot2) {
                 int result = 0;
 
-                if (byFinalDecision) result = Double.compare(shot1.finalDecision.getValue(),
-                        shot2.finalDecision.getValue());
+                Map.Entry<T[], Double> final1 = shot1.finalDecision;
+                Map.Entry<T[], Double> final2 = shot2.finalDecision;
+                if (byFinalDecision) result = Double.compare(final1.getValue(),
+                        final2.getValue());
                 if (result == 0 && byTime) result = Double.compare(shot1.time, shot2.time);
 
                 return result;

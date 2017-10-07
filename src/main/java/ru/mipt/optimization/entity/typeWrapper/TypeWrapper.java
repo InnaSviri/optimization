@@ -103,10 +103,10 @@ public class TypeWrapper<T> {
     // (within DefaultSearchRange by DefaultDomainAccuracy step)
     private @Nullable T calculateTypeInterpretation(Real r) {
         T typeInterpretation = null;
-        int i = 1;
+        int i = 0;
         while (typeInterpretation == null && i < Config.getDefaultSearchRange()/Config.getDefaultDomainAccuracy()) {
-            typeInterpretation = toTypeRule.apply(r.plus(Real.valueOf(Config.getDefaultDomainAccuracy()*i)));
-            i = (i + Integer.signum(i)) *(-1);
+           typeInterpretation = toTypeRule.apply(r.plus(Real.valueOf(Config.getDefaultDomainAccuracy()*i)));
+            i = (i==0)? 1: (i + Integer.signum(i)) *(-1);
         }
         if (typeInterpretation != null) {
             toTypeMap.put(r,typeInterpretation);

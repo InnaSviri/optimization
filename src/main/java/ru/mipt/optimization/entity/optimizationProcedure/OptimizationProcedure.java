@@ -36,8 +36,8 @@ public class OptimizationProcedure {
     public OptimizationProcedure(CostFunction costFunction, Config config) {
         if (costFunction == null || config == null)
             throw new IllegalArgumentException("CostFunction and config can't be null");
-        if (!config.algorithm.isAble(costFunction))
-            throw new IllegalArgumentException(" Algorithm " + config.algorithm.getName()
+        if (!config.getAlgorithm().isAble(costFunction))
+            throw new IllegalArgumentException(" Algorithm " + config.getAlgorithm().getName()
                     + " can not optimize given cost function" );
 
         this.config = config;
@@ -54,6 +54,7 @@ public class OptimizationProcedure {
     public void start(Vector<Real> startPoint) {
         if (costFunction.apply(startPoint) == null) throw new IllegalArgumentException("Start point must be in the domain " +
                 "of the given cost function! ");
+        procedurePoints.clear();
         procedurePoints.add(startPoint);
         optimize();
     }
@@ -83,9 +84,9 @@ public class OptimizationProcedure {
             throw new RuntimeException("Can't optimize without start point. Use method start(Vector startPoint)");
 
         Vector<Real> curPoint = procedurePoints.getLast();
-        Vector<Real> nextPoint = config.algorithm.conductOneIteration(curPoint, costFunction);
+        Vector<Real> nextPoint = config.getAlgorithm().conductOneIteration(curPoint, costFunction);
         procedurePoints.add(nextPoint);
-        if (!config.stopCriteria.isAchieved()) optimize();
+        if (!config.getAlgorithm().getStopCriteria().isAchieved(this)) optimize();
 
         timer.stop();
     }
@@ -104,7 +105,7 @@ public class OptimizationProcedure {
     }
 
     public Algorithm getAlgorithm() {
-        return config.algorithm;
+        return config.getAlgorithm();
     }
 
     public CostFunction getCostFunction() {
@@ -112,7 +113,7 @@ public class OptimizationProcedure {
     }
 
     public StopCriteria getStopCriteria() {
-        return config.stopCriteria;
+        return config.getAlgorithm().getStopCriteria();
     }
 
     public Config getConfigurations() { return config;}
