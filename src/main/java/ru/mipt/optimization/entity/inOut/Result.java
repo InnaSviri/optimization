@@ -1,10 +1,8 @@
 package ru.mipt.optimization.entity.inOut;
 
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
-import ru.mipt.optimization.algorithms.Algorithm;
 import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
 import ru.mipt.optimization.entity.typeWrapper.TypeWrapper;
 import ru.mipt.optimization.supportive.Graphics;

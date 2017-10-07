@@ -1,9 +1,6 @@
 package ru.mipt.optimization.algorithms;
 
-import com.sun.deploy.config.VerboseDefaultConfig;
-import org.jscience.mathematics.number.Number;
 import org.jscience.mathematics.number.Real;
-import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
 import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;

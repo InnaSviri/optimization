@@ -1,7 +1,5 @@
 package ru.mipt.optimization.entity.typeWrapper;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
@@ -49,10 +47,12 @@ public class TypeWrapper<T> {
     }
 
     /**
-     *
-     * @param r
-     * @return
-     * @throws
+     * Converts Real value r back to type {@link T} according to the
+     * {@link ru.mipt.optimization.entity.typeWrapper.TypeWrapper#toTypeRule convertationRule}.
+     * @param r - argument to convert
+     * @return value of argument r converted back to type {@link T} according to the
+     * {@link ru.mipt.optimization.entity.typeWrapper.TypeWrapper#toTypeRule convertationRule}.
+     * @throws RuntimeException if convertation rule returns null, i.e. doesn't cover all Real numbers
      */
     public T convert(Real r) {
         T typeInterpretation = toTypeMap.get(r);
@@ -65,11 +65,15 @@ public class TypeWrapper<T> {
     }
 
     /**
-     *
-     * @param t
-     * @return
+     * Converts argument t to Real according to the
+     * {@link ru.mipt.optimization.entity.typeWrapper.TypeWrapper#toRealRule convertationRule}.
+     * Note: can return null if geven convertationRule provides such behavior.
+     * @param t - argument to convert
+     * @return value of argument t converted to Real according to the
+     * {@link ru.mipt.optimization.entity.typeWrapper.TypeWrapper#toRealRule convertationRule}.
+     * Note: can return null if given convertationRule provides such behavior.
      */
-    public @Nullable Real convert(T t) {
+    public Real convert(T t) {
         Real realInterpretation = toRealMap.get(t);
         if (realInterpretation == null) {
             realInterpretation = toRealRule.apply(t);
@@ -82,7 +86,7 @@ public class TypeWrapper<T> {
     }
 
 
-    public T[] convertPoint(@NotNull Vector<Real> realPoint) {
+    public T[] convertPoint(Vector<Real> realPoint) {
         if (realPoint == null) throw new IllegalArgumentException("Can't convert null point!");
 
         T[] a = (T[]) Array.newInstance(tClass, realPoint.getDimension());
@@ -90,7 +94,7 @@ public class TypeWrapper<T> {
         return a;
     }
 
-    public Vector<Real> convertPoint(@NotNull T[] tPoint) {
+    public Vector<Real> convertPoint(T[] tPoint) {
         if (tPoint == null) throw new IllegalArgumentException("Can't convert null point!");
         List<Real> l = new ArrayList(tPoint.length);
         for(T t: tPoint) l.add(convert(t));
@@ -99,9 +103,9 @@ public class TypeWrapper<T> {
 
 
     // Calculates type interpretation of the given Real number with the help of toTypeRule.
-    // Finds its notnull value in case of null answer from toTypeRule
-    // (within DefaultSearchRange by DefaultDomainAccuracy step)
-    private @Nullable T calculateTypeInterpretation(Real r) {
+    // Looking its notnull value in case of null answer from toTypeRule
+    // (within DefaultSearchRange by DefaultDomainAccuracy step until DefaultSearchRange is over)
+    private T calculateTypeInterpretation(Real r) {
         T typeInterpretation = null;
         int i = 0;
         while (typeInterpretation == null && i < Config.getDefaultSearchRange()/Config.getDefaultDomainAccuracy()) {

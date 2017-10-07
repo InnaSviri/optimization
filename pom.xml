@@ -4,7 +4,7 @@
 
   <groupId>ru.mipt</groupId>
   <artifactId>optimization</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.0-alpha</version>
   <packaging>jar</packaging>
 
   <name>optimization</name>
@@ -96,7 +96,7 @@
                           <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>-->
 					<descriptors>
-						<descriptor>src/main/assembly/src.xml</descriptor>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
 					</descriptors>
 				</configuration>
 			</plugin>
