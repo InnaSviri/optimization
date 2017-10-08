@@ -30,7 +30,6 @@ public class App {
 
         Config config = new Config();
         config.configureStopCriteria(0.01,true,true,true,false);
-        Optimizator<Integer> optTest = new Optimizator<>(2, toNumber, toType, clazz, config);
 
         Function<Integer[], Double> costFunc = new Function<Integer[], Double>() {
             @Override
@@ -38,10 +37,13 @@ public class App {
                 return (double) ((integers[0]+1)*(integers[0]+1) + (integers[1]+1)*(integers[1]+1));
             }
         };
+
+        Optimizator<Integer> optTest = new Optimizator<>(2, toNumber, toType, clazz, costFunc);
+
         Integer[] i1 = {1,1};
         Integer[] i2 = {0,0};
         List<Integer[]> startPoits = Arrays.asList(i1, i2);
-        Result<Integer> res = optTest.optimize(costFunc,startPoits);
+        Result<Integer> res = optTest.optimize(config,startPoits);
         res.getSortedResults(true,true);
 
     }

@@ -23,7 +23,7 @@ import java.util.function.Function;
 public class Optimizator<T> {
     private int dimension;
     private TypeWrapper<T> typeConverter;
-    private Config configurations;
+    private Function<T[], Double> function;// function to optimize
 
     private History history = new History();
 
@@ -41,43 +41,33 @@ public class Optimizator<T> {
      *               This rule cannot return null. It must cover conversion of all double numbers
      *               otherwise optimization can return its decision with an error.
      * @param tClass - Class of the type {@link T} (to get round type erasure).
-     * @param configurations - configurations of this Optimizator session
+     * @param function - cost function over vector argument with elements of {@link T} type.
+     *                 Note: dimension of the vector argument of the given function must match given dimension
+     * @throws IllegalArgumentException if some arguments are null
      */
     public Optimizator(int dimension, Function<T, Double> toNumber, Function<Double, T> toType, 
-                       Class<T> tClass, Config configurations) {
+                       Class<T> tClass, Function<T[], Double> function) {
         if (toNumber == null || toType == null
                 || tClass == null )
             throw new IllegalArgumentException("Arguments in Optimizator constructor can't be null");
         this.dimension = dimension;
         typeConverter = new TypeWrapper<T>(toNumber, toType, tClass);
-        changeCongigurations(configurations);
-
+        this.function = function;
     }
 
     /**
-     * Changes configuration of this Optimizator session
-     * @param newConfig - new configurations
-     */
-    public void changeCongigurations(Config newConfig) {
-        if (newConfig == null) throw new IllegalArgumentException("Configurations can't be null!");
-        this.configurations = newConfig;
-    }
-
-    /**
-     *
-     * @param function - cost function over vector argument with elements of {@link T} type.
-     *                 Note: dimension of the vector argument of the given function
-     *                 must match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
+     * @param configurations - configurations of this Optimizator session
      * @param startPoints - list of points to start optimization process.
      *                    Note: the dimension of given points
      *                    must match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
      * @return results of optimization for all given start points
-     * @throws IllegalArgumentException if dimension of the vector argument of the given function  or of some point
-     * in startPoints list does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
+     * @throws IllegalArgumentException if dimension of the vector argument of the current Optimizator's
+     * {@link ru.mipt.optimization.entity.Optimizator#function} or of some point in startPoints list
+     * does not match current Optimizator's {@link ru.mipt.optimization.entity.Optimizator#dimension}
      */
-    public Result optimize(Function<T[], Double> function, List<T[]> startPoints) throws IllegalArgumentException {
-
-        OptimizationProcedure procedure = new OptimizationProcedure(createCostFunction(function), configurations);
+    public Result optimize(Config configurations, List<T[]> startPoints) throws IllegalArgumentException {
+        Config config = (configurations == null) ? new Config() : configurations;
+        OptimizationProcedure procedure = new OptimizationProcedure(createCostFunction(function, config), config);
         Result result = new Result<T>(procedure, typeConverter);
 
         for (T[] startPoint: startPoints) {
@@ -106,7 +96,7 @@ public class Optimizator<T> {
     //------------------------------------------------------------------------------------------------------------------
     
     //// TODO: 03.10.2017 change to consider determinate or undeterminate cost function
-    private CostFunction createCostFunction(final Function<T[], Double> initialFunc) {
+    private CostFunction createCostFunction(final Function<T[], Double> initialFunc, Config configurations) {
         Function<Vector<Real>, Double> funcReal = new Function<Vector<Real>, Double>() {
             @Override
             public Double apply(Vector<Real> realVector) {
