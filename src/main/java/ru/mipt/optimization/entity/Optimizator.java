@@ -93,6 +93,10 @@ public class Optimizator<T> {
         this.dimension = dimension;
     }
 
+    public History getHistory() {
+        return history;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     
     //// TODO: 03.10.2017 change to consider determinate or undeterminate cost function
