@@ -4,9 +4,7 @@ import ru.mipt.optimization.entity.Optimizator;
 import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.inOut.Result;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -43,9 +41,14 @@ public class App {
         Integer[] i1 = {1,1};
         Integer[] i2 = {0,0};
         List<Integer[]> startPoits = Arrays.asList(i1, i2);
-        Result<Integer> res = optTest.optimize(config,startPoits);
-        res.getSortedResults(true,true);
-
+        optTest.optimize(config, startPoits);
+        LinkedList<Result<Integer>> results = optTest.getHistory().getSortedResults(true,false);
+        Set<Integer[]> finalResult = new HashSet<>();
+        for (Result<Integer> res: results)
+            for (Result<Integer>.OneShot oneSh: res.getSortedResults(true,false)) {
+                finalResult.add(oneSh.finalDecision.getKey());
+            }
+        finalResult.size();
     }
 
 }

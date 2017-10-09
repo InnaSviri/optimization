@@ -115,7 +115,7 @@ public class Optimizator<T> {
      * Stores results of this Optimizator's work
      */
     public class History {
-        Map<Config, Result> results = new HashMap<>();
+        Map<Config, Result<T>> results = new HashMap<>();
 
         /**
          * Returns all results of this Optimizator's work sorted by given parameters
@@ -124,8 +124,8 @@ public class Optimizator<T> {
          * @param  byTime if true sorts by the best time of the final decision
          * @return all results of this Optimizator's work sorted by given parameters
          */
-        public LinkedList<Result> getSortedResults(boolean byFinalDecision, boolean byTime) {
-            LinkedList<Result> resultsToSort = new LinkedList<>(results.values());
+        public LinkedList<Result<T>> getSortedResults(boolean byFinalDecision, boolean byTime) {
+            LinkedList<Result<T>> resultsToSort = new LinkedList<>(results.values());
             Collections.sort(resultsToSort, getComparator(byFinalDecision, byTime));
             return resultsToSort;
         }
@@ -134,15 +134,15 @@ public class Optimizator<T> {
          * Returns history of all results of this Optimizator's work mapped to its configurations
          * @return history of all results of this Optimizator's work mapped to its configurations
          */
-        public Map<Config, Result> getResultHistory() { return results;}
+        public Map<Config, Result<T>> getResultHistory() { return results;}
 
 
         //--------------------------------------------------------------------------------------------------------------
 
-        private Comparator<Result> getComparator(final boolean byFinalDecision, final boolean byTime) {
-            return new Comparator<Result>() {
+        private Comparator<Result<T>> getComparator(final boolean byFinalDecision, final boolean byTime) {
+            return new Comparator<Result<T>>() {
                 @Override
-                public int compare(Result o1, Result o2) {
+                public int compare(Result<T> o1, Result<T> o2) {
                     int result = 0;
                     if (o1.getSortedResults(byFinalDecision, byTime).isEmpty()
                             && !o2.getSortedResults(byFinalDecision, byTime).isEmpty()) {
@@ -155,8 +155,8 @@ public class Optimizator<T> {
 
                         List<Result.OneShot> shots1 = o1.getSortedResults(byFinalDecision, byTime);
                         List<Result.OneShot> shots2 = o2.getSortedResults(byFinalDecision, byTime);
-                        Map.Entry<T[], Double> final1 = shots1.get(0).finalDecision;
-                        Map.Entry<T[], Double> final2 = shots2.get(0).finalDecision;
+                        Map.Entry<T[], Double> final1 = (Map.Entry<T[], Double>) shots1.get(0).finalDecision;
+                        Map.Entry<T[], Double> final2 = (Map.Entry<T[], Double>) shots2.get(0).finalDecision;
                         Double time1 = shots1.get(0).time;
                         Double time2 = shots2.get(0).time;
 
