@@ -4,7 +4,7 @@
 
   <groupId>ru.mipt</groupId>
   <artifactId>optimization</artifactId>
-  <version>v0.1.4</version>
+  <version>v0.1.5</version>
   <packaging>jar</packaging>
 
   <name>optimization</name>

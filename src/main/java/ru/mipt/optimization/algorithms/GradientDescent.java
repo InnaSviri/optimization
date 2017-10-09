@@ -20,13 +20,25 @@ public class GradientDescent extends PureAlgorithm {
         Vector<Real> delta = DenseVector.valueOf(reals);
 
 
-        Double fPlus = function.apply(x.plus(delta));
-        Double fMinus = function.apply(x.minus(delta));
-        if ((fPlus-fMinus) == 0) fMinus = fPlus+0.00001;
+
+        Double fPlus = null;
+        Double fMinus = null;
+        double j = 1;
+        while (fPlus == null) {
+            fPlus = function.apply(x.plus(delta.times(Real.valueOf(j))));
+            j++;
+        }
+        double k = 1;
+        while (fMinus == null) {
+            fMinus = function.apply(x.minus(delta.times(Real.valueOf(k))));
+            k++;
+        }
+        double d = fPlus-fMinus;
+        if (d == 0) d= 0.00001;
 
         Real[] gradReal = new Real[x.getDimension()];
         for (int i = 0; i < reals.length; i++ )
-            gradReal[i] = Real.valueOf((fPlus-fMinus)/10);
+            gradReal[i] = Real.valueOf(d/10);
         return DenseVector.valueOf(gradReal);
     }
 
