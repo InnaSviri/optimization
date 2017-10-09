@@ -69,7 +69,7 @@ public class OptimizationProcedure {
      * @throws RuntimeException if optimization procedure has not been started
      */
     public Tuple<Vector<Real>, Double> getOptimizedDecision() {
-        if (procedurePoints.isEmpty()) throw new RuntimeException("Can't get optimal decision without starting optimization procedure." +
+        if (procedurePoints.isEmpty()) throw new IllegalArgumentException("Can't get optimal decision without starting optimization procedure." +
                 " Use method start(X startPoint) first");
         return new Tuple<Vector<Real>, Double>(procedurePoints.getLast(),
                 costFunction.apply(procedurePoints.getLast()));
@@ -81,7 +81,7 @@ public class OptimizationProcedure {
         timer.start();
 
         if (procedurePoints.isEmpty())
-            throw new RuntimeException("Can't optimize without start point. Use method start(Vector startPoint)");
+            throw new IllegalArgumentException("Can't optimize without start point. Use method start(Vector startPoint)");
 
         Vector<Real> curPoint = procedurePoints.getLast();
         Vector<Real> nextPoint = config.getAlgorithm().conductOneIteration(curPoint, costFunction);

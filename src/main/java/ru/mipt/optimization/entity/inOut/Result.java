@@ -49,8 +49,6 @@ public class Result<T> {
         } catch (IllegalArgumentException ie) {
             throw new RuntimeException("Some arguments you enter are wrong: " + ie.getMessage()
                     + ". See initial message: \n" + ie.getMessage());
-        } catch (RuntimeException re) {
-            throw new IllegalArgumentException("OptimizationProcedure is raw. It necessary to start it at first!");
         }
 
     }
