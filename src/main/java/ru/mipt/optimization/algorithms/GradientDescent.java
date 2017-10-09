@@ -24,16 +24,18 @@ public class GradientDescent extends PureAlgorithm {
         Double fPlus = null;
         Double fMinus = null;
         double j = 1;
-        while (fPlus == null) {
+        while (fPlus == null && j<100) {
             fPlus = function.apply(x.plus(delta.times(Real.valueOf(j))));
             j++;
         }
         double k = 1;
-        while (fMinus == null) {
+        while (fMinus == null && k<100) {
             fMinus = function.apply(x.minus(delta.times(Real.valueOf(k))));
             k++;
         }
-        double d = fPlus-fMinus;
+        double d;
+        if (fMinus == null || fPlus== null) d = 0.1;
+         else d= fPlus-fMinus;
         if (d == 0) d= 0.00001;
 
         Real[] gradReal = new Real[x.getDimension()];
