@@ -30,7 +30,7 @@ public class MathHelp {
     public static double abs(Vector<Real> x) {
         double res = 0;
         for (int i=0; i<x.getDimension(); i++){
-            res =+ Math.pow(x.get(i).doubleValue(), 2);
+            res += Math.pow(x.get(i).doubleValue(), 2);
         }
         return Math.sqrt(res);
     }
