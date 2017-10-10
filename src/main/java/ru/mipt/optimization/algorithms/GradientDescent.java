@@ -14,6 +14,9 @@ import java.util.function.Function;
  * Created by Inna on 06.10.2017.
  */
 public class GradientDescent extends PureAlgorithm {
+    private static final double DEFAULT_STEP = 1.2;
+    private double step;
+
     @Override
     protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
         Real[] reals = new Real[x.getDimension()];
@@ -33,13 +36,14 @@ public class GradientDescent extends PureAlgorithm {
 
         Real[] gradReal = new Real[x.getDimension()];
         for (int i = 0; i < reals.length; i++ )
-            gradReal[i] = Real.valueOf(d/10);
+            gradReal[i] =  Real.valueOf(step*(-d/10));
         return DenseVector.valueOf(gradReal);
     }
 
     @Override
     protected void setDefaultParameters() {
         stopCriteria = new CommonStopping(false,true,true,false);
+        step = DEFAULT_STEP;
     }
 
     @Override
@@ -48,8 +52,23 @@ public class GradientDescent extends PureAlgorithm {
         return true;
     }
 
+    /**
+     * Configures algorithm parameters.
+     * @param params - algorithm parameters in the strict order:
+     *               step - value of the step of the algorithm.
+     *               If size of parameters is less than required, rest parameters will be default.
+     * @return true if size of parameters corresponds required one.
+     */
+    @Override
+    public boolean serParams(double... params) {
+        if (params.length != 1) return false;
+        step = params[0];
+        return true;
+    }
+
     @Override
     public String getName() {
         return "Gradient descent";
     }
+
 }

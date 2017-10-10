@@ -51,6 +51,13 @@ public interface Algorithm{
     public void configureStopCriteria(double error, boolean... conditions);
 
     /**
+     * Configures algorithm parameters. Number of parameters is clarified in concrete implementations.
+     * @param params - algorithm parameters. If size of parameters is less than required, rest parameters will be default.
+     * @return true if size of parameters correspond required by concrete implementation number.
+     */
+    public boolean serParams(double... params);
+
+    /**
      * Returns the name of the optimization algorithms type
      * @return the name of the optimization algorithms type
      */
