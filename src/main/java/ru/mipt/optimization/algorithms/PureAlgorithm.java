@@ -54,7 +54,7 @@ public abstract class PureAlgorithm implements Algorithm {
     }
 
     // returns delta vector to add to the current point x
-    protected abstract Vector<Real> getAlgorithmStep(Vector<Real> x, Function<Vector<Real>,Double> function);
+    protected abstract Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function);
 
     protected void setDefaultParameters() {
         stopCriteria = new CommonStopping(true,true,true,true);
