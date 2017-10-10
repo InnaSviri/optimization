@@ -85,8 +85,11 @@ public class OptimizationProcedure {
 
         Vector<Real> curPoint = procedurePoints.getLast();
         Vector<Real> nextPoint = config.getAlgorithm().conductOneIteration(curPoint, costFunction);
-        procedurePoints.add(nextPoint);
-        if (!config.getAlgorithm().getStopCriteria().isAchieved(this)) optimize();
+        if (!isStuck()) {
+            procedurePoints.add(nextPoint);
+            if (!config.getAlgorithm().getStopCriteria().isAchieved(this)) optimize();
+        }
+
 
         timer.stop();
     }
@@ -117,6 +120,21 @@ public class OptimizationProcedure {
     }
 
     public Config getConfigurations() { return config;}
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    // checks if optimization procedure is stuck
+    private boolean isStuck(){
+        int procedurePointsSize = procedurePoints.size();
+        if (procedurePointsSize < 3) return false;
+
+        boolean res = true;
+        //if 10 last elements are equal return true
+        for (int i = 1; i<10; i++)
+        if (!procedurePoints.get(procedurePointsSize-i).equals(procedurePoints.get(procedurePointsSize-i-1)) )
+            res = false;
+        return res;
+    }
 
     //---------------------------------------------inner----------------------------------------------------------------
 
