@@ -3,11 +3,11 @@ package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
+import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.supportive.MathHelp;
 
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
 
 /**
@@ -34,21 +34,24 @@ public class UndeterminateCostFunc extends CostFunction  {
         if (apply(pointNotInDomain) != null) throw new IllegalArgumentException("argument pointNotInDomain " +
                 "can't be in the domain of the function");
         Vector<Real> find = DenseVector.valueOf(directionPoint);
-        domainSearch(pointNotInDomain, find, new Random());
+        domainSearch(pointNotInDomain, find, 1);
         return find;
     }
 
     // writes in variable "in" nearest to the "out" domain point
-    private void domainSearch(Vector<Real> out, Vector<Real> in, Random r) {
-        Double curDistance = r.nextDouble()* MathHelp.getDistance(out,in);
+    private void domainSearch(Vector<Real> out, Vector<Real> in, int iteration) {
+        if (iteration > Config.getDefaultSearchRange()/Config.getDefaultDomainAccuracy()) return;
+        Double curDistance = MathHelp.getDistance(out,in) /(2*iteration);
         Vector<Real> curPoint = MathHelp.addDistance(out,in, curDistance);
         if (apply(curPoint) != null) {
             in = curPoint;
-            domainSearch(out,in,new Random());
+            iteration = 1;
+            domainSearch(out,in,iteration);
         } else if (curDistance > accuracy) {
-            domainSearch(out,in,r);
-        } else {
-            domainSearch(curPoint, in, new Random());
+            iteration++;
+            domainSearch(out,in,iteration);
+        } else if (iteration != 1) {
+            domainSearch(curPoint, in, 1);
         }
     }
 }
