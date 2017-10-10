@@ -7,6 +7,7 @@ import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.supportive.MathHelp;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 
 /**
@@ -33,23 +34,21 @@ public class UndeterminateCostFunc extends CostFunction  {
         if (apply(pointNotInDomain) != null) throw new IllegalArgumentException("argument pointNotInDomain " +
                 "can't be in the domain of the function");
         Vector<Real> find = DenseVector.valueOf(directionPoint);
-        domainSearch(pointNotInDomain, find, 1);
+        domainSearch(pointNotInDomain, find, new Random());
         return find;
     }
 
     // writes in variable "in" nearest to the "out" domain point
-    private void domainSearch(Vector<Real> out, Vector<Real> in, int iteration) {
-        Double curDistance = MathHelp.getDistance(out,in) /(2*iteration);
+    private void domainSearch(Vector<Real> out, Vector<Real> in, Random r) {
+        Double curDistance = r.nextDouble()* MathHelp.getDistance(out,in);
         Vector<Real> curPoint = MathHelp.addDistance(out,in, curDistance);
         if (apply(curPoint) != null) {
             in = curPoint;
-            iteration = 1;
-            domainSearch(out,in,iteration);
+            domainSearch(out,in,new Random());
         } else if (curDistance > accuracy) {
-            iteration++;
-            domainSearch(out,in,iteration);
-        } else if (iteration != 1) {
-            domainSearch(curPoint, in, 1);
+            domainSearch(out,in,r);
+        } else {
+            domainSearch(curPoint, in, new Random());
         }
     }
 }
