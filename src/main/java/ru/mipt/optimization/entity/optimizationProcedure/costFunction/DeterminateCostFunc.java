@@ -26,8 +26,9 @@ public class DeterminateCostFunc extends CostFunction {
     }
 
     @Override
-    public void correctPointToDomain(Vector<Real> pointNotInDomain,
+    public Vector<Real> getNearestDomainPoint(Vector<Real> pointNotInDomain,
                                      Vector<Real> directionPoint) {
-
+        // TODO: 10.10.2017 realize
+        return null;
     }
 }

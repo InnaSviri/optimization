@@ -39,15 +39,15 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
     }
 
     /**
-     * Corrects given point not in domain to the the nearest domain point
-     * and writes new value of found domain point to the parameter pointNotInDomain.
+     * Returns nearest domain point to the given point not in domain.
      * Search of the domain point is performed with specified
      * {@link ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction#accuracy}
      * in the direction to the given directionPoint.
      * @param pointNotInDomain - point not in the domain of the cost function
      * @param directionPoint - point to specify the search direction
+     * @return nearest domain point to the given point not in domain
      */
-    public abstract void correctPointToDomain(Vector<Real> pointNotInDomain,
+    public abstract Vector<Real> getNearestDomainPoint(Vector<Real> pointNotInDomain,
                                               Vector<Real> directionPoint);
 
     //------------------------------------------------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
 import org.jscience.mathematics.number.Real;
+import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.supportive.MathHelp;
@@ -27,17 +28,19 @@ public class UndeterminateCostFunc extends CostFunction  {
 
 
     @Override
-    public void correctPointToDomain(Vector<Real> pointNotInDomain,
+    public Vector<Real> getNearestDomainPoint(Vector<Real> pointNotInDomain,
                                      Vector<Real> directionPoint) {
         if (apply(pointNotInDomain) != null) throw new IllegalArgumentException("argument pointNotInDomain " +
                 "can't be in the domain of the function");
-        domainSearch(pointNotInDomain, directionPoint, 1);
+        Vector<Real> find = DenseVector.valueOf(directionPoint);
+        domainSearch(pointNotInDomain, find, 1);
+        return find;
     }
 
     // writes in variable "in" nearest to the "out" domain point
     private void domainSearch(Vector<Real> out, Vector<Real> in, int iteration) {
         Double curDistance = MathHelp.getDistance(out,in) /(2*iteration);
-        Vector<Real> curPoint = MathHelp.addDistance(out,curDistance);
+        Vector<Real> curPoint = MathHelp.addDistance(out,in, curDistance);
         if (apply(curPoint) != null) {
             in = curPoint;
             iteration = 1;

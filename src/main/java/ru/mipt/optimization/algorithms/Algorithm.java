@@ -3,6 +3,7 @@ package ru.mipt.optimization.algorithms;
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
+import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -20,11 +21,11 @@ public interface Algorithm{
      * @param x the point from wich the next step will be performed.
      *          Note: Must be in the domain of the cost function
      *          otherwise the IllegalArgumentException is thrown
-     * @param function the cost function
+     * @param function the cost function to optimize
      * @return the new value of the argument x on the next iteration of the Algorithm
      * @throws IllegalArgumentException if x is not in the domain of the given cost function
      */
-    public Vector<Real> conductOneIteration (Vector<Real> x, Function<Vector<Real>, Double> function)
+    public Vector<Real> conductOneIteration (Vector<Real> x, CostFunction function)
             throws IllegalArgumentException;
 
     /**

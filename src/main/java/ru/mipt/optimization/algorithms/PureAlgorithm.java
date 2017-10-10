@@ -4,6 +4,7 @@ import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.optimizationProcedure.OptimizationProcedure;
 import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
+import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
 
 import java.util.function.Function;
 
@@ -18,12 +19,13 @@ public abstract class PureAlgorithm implements Algorithm {
     {setDefaultParameters();}
 
     @Override
-    public Vector<Real> conductOneIteration(Vector<Real> x, Function<Vector<Real>,Double> function) throws IllegalArgumentException {
+    public Vector<Real> conductOneIteration(Vector<Real> x, CostFunction function) throws IllegalArgumentException {
         //// TODO: 29.05.2017
 
         Vector<Real> res = x.plus(getAlgorithmStep(x,function));
+        if (function.apply(res) == null)
+            res = function.getNearestDomainPoint(res, x);
         return res;
-        //        if (nextPoint.minus(curPoint).get(0).isLargerThan(Real.valueOf(0.001))) optimize();
     }
 
     @Override
@@ -51,6 +53,7 @@ public abstract class PureAlgorithm implements Algorithm {
         stopCriteria = new CommonStopping(conditions[0],conditions[1], conditions[2], conditions[3],error);
     }
 
+    // returns delta vector to add to the current point x
     protected abstract Vector<Real> getAlgorithmStep(Vector<Real> x, Function<Vector<Real>,Double> function);
 
     protected void setDefaultParameters() {
