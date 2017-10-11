@@ -1,5 +1,6 @@
 package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
+import org.apache.commons.collections4.map.MultiKeyMap;
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
@@ -7,6 +8,8 @@ import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.supportive.MathHelp;
 
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -16,9 +19,10 @@ import java.util.function.Function;
  */
 public class UndeterminateCostFunc extends CostFunction  {
 
-    private Map<Vector<Real>, Vector<Real>> covered;
+    private MultiKeyMap<Vector<Real>, Vector<Real>> covered = new MultiKeyMap<>();
 
     private int recursionNum = 0;
+    private Map.Entry<Vector<Real>, Vector<Real>> currentSearchPare;
 
     /**
      * Creates new UndeterminateCostFunc with specified accuracy.
@@ -35,10 +39,11 @@ public class UndeterminateCostFunc extends CostFunction  {
                                      Vector<Real> directionPoint) {
         if (apply(pointNotInDomain) != null) throw new IllegalArgumentException("argument pointNotInDomain " +
                 "can't be in the domain of the function");
-        Vector<Real> find = DenseVector.valueOf(directionPoint);
-        recursionNum = 0;
-        domainSearch(correctToSearchRange(pointNotInDomain), find, 1);
-        return find;
+
+        Vector<Real> find = covered.get(pointNotInDomain, directionPoint);
+        if ( find != null) return find;
+        initiateSearch(pointNotInDomain, directionPoint);
+        return covered.get(pointNotInDomain,directionPoint);
     }
 
     // writes in variable "in" nearest to the "out" domain point
@@ -49,9 +54,9 @@ public class UndeterminateCostFunc extends CostFunction  {
         Double curDistance = MathHelp.getDistance(out,in) /(2*iteration);
         Vector<Real> curPoint = MathHelp.addDistance(out,in, curDistance);
         if (apply(curPoint) != null) {
-            in = curPoint;
+            covered.put(currentSearchPare.getKey(),currentSearchPare.getValue(),curPoint);
             iteration = 1;
-            if (curDistance > config.accuracyOfDomainSearch) domainSearch(out,in,iteration);
+            if (curDistance > config.accuracyOfDomainSearch) domainSearch(out,curPoint,iteration);
         } else if (curDistance > config.accuracyOfDomainSearch) {
             iteration++;
             domainSearch(out,in,iteration);
@@ -71,5 +76,16 @@ public class UndeterminateCostFunc extends CostFunction  {
             } else toWrite[i] = out.get(i);
         }
         return DenseVector.valueOf(toWrite);
+    }
+
+    private void initiateSearch(Vector<Real> pointNotInDomain, Vector<Real> directionPoint) {
+        recursionNum = 0;
+        currentSearchPare = new AbstractMap.SimpleEntry<Vector<Real>, Vector<Real>>(pointNotInDomain,
+                directionPoint);
+
+        Vector<Real> correctedToRange = correctToSearchRange(pointNotInDomain);
+        covered.put(pointNotInDomain, directionPoint, directionPoint);
+        if (apply(correctedToRange) != null) covered.put(pointNotInDomain, directionPoint, correctedToRange);
+        else domainSearch(correctedToRange, directionPoint, 1);
     }
 }
