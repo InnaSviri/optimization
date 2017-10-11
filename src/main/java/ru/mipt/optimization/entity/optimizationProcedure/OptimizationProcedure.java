@@ -126,7 +126,7 @@ public class OptimizationProcedure {
     // checks if optimization procedure is stuck
     private boolean isStuck(){
         int procedurePointsSize = procedurePoints.size();
-        if (procedurePointsSize < 3) return false;
+        if (procedurePointsSize < 10) return false;
 
         boolean res = true;
         //if 10 last elements are equal return true
