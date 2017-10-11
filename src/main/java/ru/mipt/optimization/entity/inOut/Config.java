@@ -11,21 +11,29 @@ import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
 public class Config {
 
     private static final double DEFAULT_ACCURACY = 0.01;
-    private static final double DEFAULT_SEARCH_RANGE = 10000;
+    private static final double DEFAULT_SEARCH_RANGE[] = {-10000,10000};
 
     public final double accuracyOfDomainSearch;
+    public final double[] searchRange;
 
     private final Algorithm algorithm;
 
     /**
      * Creates Config object with given parameters
      * @param accuracyOfDomainSearch - accuracy with which the search of domain points will be performed
+     * @param searchRange - search range, i.e. range of elements of the vector argument in their number interpretation.
+     *                    Size of the array must be 2: first element lower bound and the second one - the upper bound.
      * @param algorithm - selected and tuned optimization algorithm
+     * @throws IllegalArgumentException if the size of search range is not equal 2
+     * or the first element is larger than the second one or algorithm is null.
      */
-    public Config(double accuracyOfDomainSearch, Algorithm algorithm) {
+    public Config(double accuracyOfDomainSearch, double[] searchRange, Algorithm algorithm) {
         if (algorithm == null)
             throw new IllegalArgumentException("Arguments in Config constructor can't be null!");
-
+        if (searchRange.length != 2 || searchRange[0]>searchRange[1])
+            throw new IllegalArgumentException(" searchRange must be of size two " +
+                    "and first element must be less than the second one!");
+        this.searchRange = searchRange;
         this.accuracyOfDomainSearch = accuracyOfDomainSearch;
         this.algorithm = algorithm;
     }
@@ -37,15 +45,17 @@ public class Config {
      */
     public Config() {
         accuracyOfDomainSearch = DEFAULT_ACCURACY;
+        searchRange = DEFAULT_SEARCH_RANGE;
         algorithm = new GradientDescent();
     }
 
     /**
-     * Creates Config object with given parameters and default accuracy of the domain search
+     * Creates Config object with given parameters and default accuracy of the domain search and search range
      * @param algorithm - selected and tuned optimization algorithm
      */
     public Config(Algorithm algorithm) {
         accuracyOfDomainSearch = DEFAULT_ACCURACY;
+        searchRange = DEFAULT_SEARCH_RANGE;
         this.algorithm = algorithm;
     }
 
@@ -63,6 +73,17 @@ public class Config {
         algorithm.configureStopCriteria(error, conditions);
     }
 
+    /**
+     * Configures the chosen optimization {@link ru.mipt.optimization.entity.inOut.Config#algorithm}'s parameters.
+     * Number of parameters is clarified in concrete implementations
+     * of the {@link ru.mipt.optimization.algorithms.Algorithm} interface.
+     * @param params algorithm parameters. If size of parameters is less than required, rest parameters will be default.
+     * @return true if size of parameters correspond required by concrete implementation number.
+     */
+    public boolean setAlgorithmParams(double... params) {
+        return algorithm.serParams(params);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     public Algorithm getAlgorithm() { return algorithm;}
@@ -71,7 +92,7 @@ public class Config {
         return DEFAULT_ACCURACY;
     }
 
-    public static double getDefaultSearchRange() {
+    public static double[] getDefaultSearchRange() {
         return DEFAULT_SEARCH_RANGE;
     }
 

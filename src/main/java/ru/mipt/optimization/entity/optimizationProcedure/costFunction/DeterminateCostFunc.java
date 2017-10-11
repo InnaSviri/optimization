@@ -2,6 +2,7 @@ package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
+import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 
 import java.util.function.Function;
@@ -19,10 +20,10 @@ public class DeterminateCostFunc extends CostFunction {
     /**
      * Creates new DeterminateCostFunc with specified accuracy.
      * @param functionRule - rule for mapping X in its Double cost
-     * @param accuracy - interval of domain search vision
+     * @param config - configurations, including interval of domain search vision and the search range
      */
-    public DeterminateCostFunc(Function functionRule, Double accuracy) {
-        super(functionRule, accuracy);
+    public DeterminateCostFunc(Function functionRule, Config config) {
+        super(functionRule, config);
     }
 
     @Override
