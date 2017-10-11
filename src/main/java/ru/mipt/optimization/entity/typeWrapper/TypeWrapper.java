@@ -109,7 +109,7 @@ public class TypeWrapper<T> {
         T typeInterpretation = null;
         int i = 0;
         while (typeInterpretation == null
-                && i < (Config.getDefaultSearchRange()[1]-Config.getDefaultSearchRange()[0])/Config.getDefaultDomainAccuracy() ) {
+                && i < Config.getDefaultMaxRecursionNum() ) {
            typeInterpretation = toTypeRule.apply(r.plus(Real.valueOf(Config.getDefaultDomainAccuracy()*i)));
             i = (i==0)? 1: (i + Integer.signum(i)) *(-1);
         }

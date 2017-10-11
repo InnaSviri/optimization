@@ -18,6 +18,8 @@ public class UndeterminateCostFunc extends CostFunction  {
 
     private Map<Vector<Real>, Vector<Real>> covered;
 
+    private int recursionNum = 0;
+
     /**
      * Creates new UndeterminateCostFunc with specified accuracy.
      * @param functionRule - rule for mapping X in its Double cost
@@ -34,14 +36,16 @@ public class UndeterminateCostFunc extends CostFunction  {
         if (apply(pointNotInDomain) != null) throw new IllegalArgumentException("argument pointNotInDomain " +
                 "can't be in the domain of the function");
         Vector<Real> find = DenseVector.valueOf(directionPoint);
+        recursionNum = 0;
         domainSearch(correctToSearchRange(pointNotInDomain), find, 1);
         return find;
     }
 
     // writes in variable "in" nearest to the "out" domain point
     private void domainSearch(Vector<Real> out, Vector<Real> in, int iteration) {
+        if (recursionNum > config.getMaxRecursionNumber()) return;
+        recursionNum++;
 
-        if (iteration > (config.searchRange[1] - config.searchRange[0])/config.accuracyOfDomainSearch) return;
         Double curDistance = MathHelp.getDistance(out,in) /(2*iteration);
         Vector<Real> curPoint = MathHelp.addDistance(out,in, curDistance);
         if (apply(curPoint) != null) {

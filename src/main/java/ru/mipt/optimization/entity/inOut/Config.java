@@ -12,6 +12,7 @@ public class Config {
 
     private static final double DEFAULT_ACCURACY = 0.01;
     private static final double DEFAULT_SEARCH_RANGE[] = {-10000,10000};
+    private static final int DEFAULT_MAX_RECURSION_NUM = 400;
 
     public final double accuracyOfDomainSearch;
     public final double[] searchRange;
@@ -85,6 +86,11 @@ public class Config {
     }
 
     //------------------------------------------------------------------------------------------------------------------
+    public int getMaxRecursionNumber() {
+        double givenMax = (searchRange[1] - searchRange[0])/accuracyOfDomainSearch;
+        Double max = (givenMax < DEFAULT_MAX_RECURSION_NUM) ? givenMax : DEFAULT_MAX_RECURSION_NUM;
+        return max.intValue();
+    }
 
     public Algorithm getAlgorithm() { return algorithm;}
 
@@ -96,4 +102,7 @@ public class Config {
         return DEFAULT_SEARCH_RANGE;
     }
 
+    public static int getDefaultMaxRecursionNum() {
+        return DEFAULT_MAX_RECURSION_NUM;
+    }
 }
