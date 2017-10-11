@@ -19,23 +19,10 @@ public class GradientDescent extends PureAlgorithm {
 
     @Override
     protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
-        Real[] reals = new Real[x.getDimension()];
-        for (int i = 0; i < reals.length; i++ ) reals[i] = Real.valueOf(0.1);
-        Vector<Real> delta = DenseVector.valueOf(reals);
-
-        Double fPlus = function.apply(x.plus(delta));
-        if(fPlus == null)
-            fPlus = function.apply(function.getNearestDomainPoint(x.plus(delta), x));
-
-        Double fMinus = function.apply(x.minus(delta));
-        if (fMinus == null) {
-            fMinus = function.apply(function.getNearestDomainPoint(x.minus(delta), x));
-        }
-        double d = fPlus-fMinus;
-        if (d == 0) d= 0.00001;
+        double d = function.getDerivative(x);
 
         Real[] gradReal = new Real[x.getDimension()];
-        for (int i = 0; i < reals.length; i++ )
+        for (int i = 0; i < x.getDimension(); i++ )
             gradReal[i] =  Real.valueOf(step*(-d/10));
         return DenseVector.valueOf(gradReal);
     }

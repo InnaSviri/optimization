@@ -32,4 +32,10 @@ public class DeterminateCostFunc extends CostFunction {
         // TODO: 10.10.2017 realize
         return null;
     }
+
+    @Override
+    public double getDerivative(Vector<Real> x) {
+        // TODO: 11.10.2017 realize 
+        return 0;
+    }
 }

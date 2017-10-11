@@ -46,6 +46,25 @@ public class UndeterminateCostFunc extends CostFunction  {
         return covered.get(pointNotInDomain,directionPoint);
     }
 
+    @Override
+    public double getDerivative(Vector<Real> x) {
+        Real[] reals = new Real[x.getDimension()];
+        for (int i = 0; i < reals.length; i++ ) reals[i] = Real.valueOf(config.accuracyOfDomainSearch);
+        Vector<Real> delta = DenseVector.valueOf(reals);
+
+        Double fPlus = apply(x.plus(delta));
+        if(fPlus == null)
+            fPlus = apply(getNearestDomainPoint(x.plus(delta), x));
+
+        Double fMinus = apply(x.minus(delta));
+        if (fMinus == null) {
+            fMinus = apply(getNearestDomainPoint(x.minus(delta), x));
+        }
+        double d = fPlus-fMinus;
+        if (d == 0) d= 0.00001;
+        return d;
+    }
+
     // writes in variable "in" nearest to the "out" domain point
     private void domainSearch(Vector<Real> out, Vector<Real> in, int iteration) {
         if (recursionNum > config.getMaxRecursionNumber()) return;

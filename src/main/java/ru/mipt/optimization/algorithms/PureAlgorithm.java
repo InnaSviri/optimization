@@ -123,7 +123,7 @@ public abstract class PureAlgorithm implements Algorithm {
 
         private boolean checkForDecisionProximity(OptimizationProcedure optProc) {
             Vector<Real> xk = optProc.getProcedurePoints().peekLast();
-            return optProc.getCostFunction().apply(xk) <= epsilon;
+            return Math.abs(optProc.getCostFunction().getDerivative(xk)) <= epsilon;
         }
 
         // TODO: 06.10.2017 add constraints consideration

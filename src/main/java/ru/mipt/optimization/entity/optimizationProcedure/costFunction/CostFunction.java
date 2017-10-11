@@ -51,6 +51,13 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
     public abstract Vector<Real> getNearestDomainPoint(Vector<Real> pointNotInDomain,
                                               Vector<Real> directionPoint);
 
+    /**
+     * Returns derivative of this cost function in given point
+     * @param x point to calculate derivative in.
+     * @return derivative of this cost function in given point
+     */
+    public abstract double getDerivative (Vector<Real> x);
+
     //------------------------------------------------------------------------------------------------------------------
 
     public Function<Vector<Real>, Double> getFunctionRule() {
