@@ -62,7 +62,7 @@ public class UndeterminateCostFunc extends CostFunction  {
         }
         double d = fPlus-fMinus;
         if (d == 0) d= 0.00001;
-        return d;
+        return d/(2*config.accuracyOfDomainSearch);
     }
 
     // writes in variable "in" nearest to the "out" domain point

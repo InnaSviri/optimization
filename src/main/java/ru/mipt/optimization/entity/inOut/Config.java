@@ -21,7 +21,8 @@ public class Config {
 
     /**
      * Creates Config object with given parameters
-     * @param accuracyOfDomainSearch - accuracy with which the search of domain points will be performed
+     * @param accuracyOfDomainSearch - accuracy with which the search of domain points will be performed.
+     *                               Note: can't be zero, if zero default accuracy is set.
      * @param searchRange - search range, i.e. range of elements of the vector argument in their number interpretation.
      *                    Size of the array must be 2: first element lower bound and the second one - the upper bound.
      * @param algorithm - selected and tuned optimization algorithm
@@ -35,7 +36,7 @@ public class Config {
             throw new IllegalArgumentException(" searchRange must be of size two " +
                     "and first element must be less than the second one!");
         this.searchRange = searchRange;
-        this.accuracyOfDomainSearch = accuracyOfDomainSearch;
+        this.accuracyOfDomainSearch = (accuracyOfDomainSearch!=0) ? accuracyOfDomainSearch : DEFAULT_ACCURACY;
         this.algorithm = algorithm;
     }
 
