@@ -51,7 +51,7 @@ public class UndeterminateCostFunc extends CostFunction  {
         if (apply(curPoint) != null) {
             in = curPoint;
             iteration = 1;
-            domainSearch(out,in,iteration);
+            if (curDistance > config.accuracyOfDomainSearch) domainSearch(out,in,iteration);
         } else if (curDistance > config.accuracyOfDomainSearch) {
             iteration++;
             domainSearch(out,in,iteration);
