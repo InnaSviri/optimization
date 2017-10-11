@@ -6,7 +6,7 @@ package ru.mipt.optimization.entity.optimizationProcedure;
  */
 public abstract class StopCriteria {
 
-    private static final int MAX_ITERATIONS_NUM = 1000000;
+    private static final int MAX_ITERATIONS_NUM = 200;
 
     protected final static double DEFAULT_ERROR = 0.1;
 
