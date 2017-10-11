@@ -101,8 +101,10 @@ public abstract class PureAlgorithm implements Algorithm {
          */
         public CommonStopping(boolean byDecisionProximity, boolean byCostFuncChangeRate, boolean byArgumentsChangeRate, boolean byConstraintsFulfillment, double error) {
             epsilon = error;
-            new CommonStopping(byDecisionProximity,byCostFuncChangeRate,
-                    byArgumentsChangeRate, byConstraintsFulfillment);
+            this.byDecisionProximity = byDecisionProximity;
+            this.byCostFuncChangeRate = byCostFuncChangeRate;
+            this.byArgumentsChangeRate = byArgumentsChangeRate;
+            this.byConstraintsFulfillment = byConstraintsFulfillment;
         }
 
         @Override
@@ -116,7 +118,7 @@ public abstract class PureAlgorithm implements Algorithm {
             boolean argumentsChangeRate = !byArgumentsChangeRate
                     || checkForArgumentsChangeRate(optimizationProcedure);
 
-            return (decisionProximity&&constraintsFulfillment) || (costFuncChangeRate && argumentsChangeRate);
+            return decisionProximity && constraintsFulfillment && costFuncChangeRate && argumentsChangeRate;
         }
 
         //--------------------------------------------------------------------------------------------------------------
