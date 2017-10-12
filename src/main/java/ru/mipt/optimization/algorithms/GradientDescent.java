@@ -23,7 +23,7 @@ public class GradientDescent extends PureAlgorithm {
 
         Real[] gradReal = new Real[x.getDimension()];
         for (int i = 0; i < x.getDimension(); i++ )
-            gradReal[i] =  Real.valueOf(step*(-d/10));
+            gradReal[i] =  Real.valueOf(step*(-d));
         return DenseVector.valueOf(gradReal);
     }
 
