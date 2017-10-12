@@ -51,7 +51,7 @@ public abstract class PureAlgorithm implements Algorithm {
     public void configureStopCriteria(double error, boolean... conditions) {
         if (conditions.length != 5)
             throw new IllegalArgumentException("Wrong length of conditions argument!" +
-                    "For configuration stop criteria by the common template  are necessary four criteria.");
+                    "For configuration stop criteria by the common template  are necessary five criteria.");
         stopCriteria = new CommonStopping(conditions[0],conditions[1],conditions[2],conditions[3],conditions[4],error);
     }
 

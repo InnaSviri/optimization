@@ -56,7 +56,9 @@ public class OptimizationProcedure {
                 "of the given cost function! ");
         procedurePoints.clear();
         procedurePoints.add(startPoint);
+        timer.start();
         optimize();
+        timer.stop();
     }
 
     /**
@@ -78,7 +80,6 @@ public class OptimizationProcedure {
 
     //optimizes costFunction using algorithm and stopCriteria
     private void optimize() {
-        timer.start();
 
         if (procedurePoints.isEmpty())
             throw new IllegalArgumentException("Can't optimize without start point. Use method start(Vector startPoint)");
@@ -90,8 +91,6 @@ public class OptimizationProcedure {
             if (!config.getAlgorithm().getStopCriteria().isAchieved(this)) optimize();
         }
 
-
-        timer.stop();
     }
 
     //---------------------------------------- getters -----------------------------------------------------------------
