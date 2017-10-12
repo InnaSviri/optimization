@@ -27,7 +27,7 @@ public class App {
         Class<Integer> clazz = Integer.class;
 
         Config config = new Config();
-        config.configureStopCriteria(0.01,true,true,true,false);
+        config.configureStopCriteria(0.01,true,true,true, true,false);
 
         Function<Integer[], Double> costFunc = new Function<Integer[], Double>() {
             @Override
