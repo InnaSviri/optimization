@@ -34,8 +34,14 @@ public class DeterminateCostFunc extends CostFunction {
     }
 
     @Override
-    public double getDerivative(Vector<Real> x) {
+    public double getPartialDerivative(Vector<Real> x, int dir) {
         // TODO: 11.10.2017 realize 
         return 0;
+    }
+
+    @Override
+    public Vector<Real> getGradient(Vector<Real> x) {
+        // TODO: 18.10.2017 realize 
+        return null;
     }
 }

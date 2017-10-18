@@ -47,22 +47,35 @@ public class UndeterminateCostFunc extends CostFunction  {
     }
 
     @Override
-    public double getDerivative(Vector<Real> x) {
+    public double getPartialDerivative(Vector<Real> x, int dir) {
+        if (dir < 0 || dir > x.getDimension()-1)
+            throw new IllegalArgumentException("Given direction isn't within its bounds!");
         Real[] reals = new Real[x.getDimension()];
-        for (int i = 0; i < reals.length; i++ ) reals[i] = Real.valueOf(config.accuracyOfDomainSearch);
-        Vector<Real> delta = DenseVector.valueOf(reals);
+        for (int i = 0; i < reals.length; i++ )
+            if (i == dir) reals[i] = x.get(i).plus(Real.valueOf(config.accuracyOfDomainSearch));
+            else reals[i] =  x.get(i);
+        Vector<Real> xPlus = DenseVector.valueOf(reals);
 
-        Double fPlus = apply(x.plus(delta));
+        Double f = apply(x);
+        if (f == null)
+            throw new IllegalArgumentException("Given point x is out of the domain. Can't calculate partial derivative!");
+
+        Double fPlus = apply(xPlus);
         if(fPlus == null)
-            fPlus = apply(getNearestDomainPoint(x.plus(delta), x));
+            fPlus = apply(getNearestDomainPoint(xPlus, x));
 
-        Double fMinus = apply(x.minus(delta));
-        if (fMinus == null) {
-            fMinus = apply(getNearestDomainPoint(x.minus(delta), x));
-        }
-        double d = fPlus-fMinus;
+        double d = fPlus-f;
         if (d == 0) d= 0.00001;
-        return d/(2*config.accuracyOfDomainSearch);
+        return d/(config.accuracyOfDomainSearch);
+    }
+
+    @Override
+    public Vector<Real> getGradient(Vector<Real> x) {
+        Real[] reals = new Real[x.getDimension()];
+        for (int i = 0; i < reals.length; i++ ) {
+            reals[i] = Real.valueOf(getPartialDerivative(x, i));
+        }
+        return DenseVector.valueOf(reals);
     }
 
     // writes in variable "in" nearest to the "out" domain point

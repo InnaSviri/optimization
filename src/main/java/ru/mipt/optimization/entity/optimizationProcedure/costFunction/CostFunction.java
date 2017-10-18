@@ -52,11 +52,22 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
                                               Vector<Real> directionPoint);
 
     /**
-     * Returns derivative of this cost function in given point
-     * @param x point to calculate derivative in.
-     * @return derivative of this cost function in given point
+     * Returns partial derivative in the given direction of this cost function in the given point
+     * @param x point in the domin of the cost function to calculate derivative in.
+     * @param direction - dimension to calculate derivative in. Must be within bounds [0;x.dimension-1]
+     * @return partial derivative in the given direction of this cost function in given point
+     * @throws IllegalArgumentException if the given point is out of the domain of the cost function
+     *          or of direction is not within bounds.
      */
-    public abstract double getDerivative (Vector<Real> x);
+    public abstract double getPartialDerivative (Vector<Real> x, int direction);
+
+    /**
+     * Returnes gradient in the given point x
+     * @param x - point in the domain of the cpst function to caalculate gradient in
+     * @return gradient in the given point x
+     * @throws IllegalArgumentException if the given point is out of the domain of the cost function
+     */
+    public abstract Vector<Real> getGradient(Vector<Real> x);
 
     //------------------------------------------------------------------------------------------------------------------
 

@@ -19,11 +19,11 @@ public class GradientDescent extends PureAlgorithm {
 
     @Override
     protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
-        double d = function.getDerivative(x);
+        Vector<Real> g = function.getGradient(x);
 
         Real[] gradReal = new Real[x.getDimension()];
         for (int i = 0; i < x.getDimension(); i++ )
-            gradReal[i] =  Real.valueOf(step*(-d));
+            gradReal[i] = g.get(i).times(Real.valueOf(-step));
         return DenseVector.valueOf(gradReal);
     }
 
