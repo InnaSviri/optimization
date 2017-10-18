@@ -55,7 +55,7 @@ public interface Algorithm{
      * @param params - algorithm parameters. If size of parameters is less than required, rest parameters will be default.
      * @return true if size of parameters correspond required by concrete implementation number.
      */
-    public boolean serParams(double... params);
+    public boolean setParams(double... params);
 
     /**
      * Returns the name of the optimization algorithms type

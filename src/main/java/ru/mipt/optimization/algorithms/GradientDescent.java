@@ -47,7 +47,7 @@ public class GradientDescent extends PureAlgorithm {
      * @return true if size of parameters corresponds required one.
      */
     @Override
-    public boolean serParams(double... params) {
+    public boolean setParams(double... params) {
         if (params.length != 1) return false;
         step = params[0];
         return true;
