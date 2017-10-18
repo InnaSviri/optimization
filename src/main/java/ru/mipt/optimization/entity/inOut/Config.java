@@ -2,6 +2,7 @@ package ru.mipt.optimization.entity.inOut;
 
 import ru.mipt.optimization.algorithms.Algorithm;
 import ru.mipt.optimization.algorithms.GradientDescent;
+import ru.mipt.optimization.algorithms.Kaczmarz;
 import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
 
 /**
@@ -48,7 +49,7 @@ public class Config {
     public Config() {
         accuracyOfDomainSearch = DEFAULT_ACCURACY;
         searchRange = DEFAULT_SEARCH_RANGE;
-        algorithm = new GradientDescent();
+        algorithm = new Kaczmarz();
     }
 
     /**
@@ -83,7 +84,7 @@ public class Config {
      * @return true if size of parameters correspond required by concrete implementation number.
      */
     public boolean setAlgorithmParams(double... params) {
-        return algorithm.serParams(params);
+        return algorithm.setParams(params);
     }
 
     //------------------------------------------------------------------------------------------------------------------

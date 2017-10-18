@@ -40,7 +40,7 @@ public class Kaczmarz extends PureAlgorithm{
     @Override
     public boolean isAble(Function<Vector<Real>, Double> function) {
         // TODO: 18.10.2017 add checking 
-        return false;
+        return true;
     }
 
     @Override
@@ -68,6 +68,7 @@ public class Kaczmarz extends PureAlgorithm{
         return "Kaczmarz";
     }
 
+    // TODO: 18.10.2017 don't work 
     @Override
     protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
         return getAlgorithmStep(x, function.getGradient(x),Real.ZERO);
