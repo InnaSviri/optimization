@@ -40,6 +40,13 @@ public class MathHelp {
                 : x.times(Real.valueOf(1/norm(x)));
     }
 
+    public static Vector<Real> getZeroVector(int dim) {
+        Real[] nulReals = new Real[dim];
+        for (int i = 0; i < dim; i++ )
+            nulReals[i] = Real.ZERO;
+        return DenseVector.valueOf(nulReals);
+    }
+
     private static Vector<Real> nulVecor(int dim) {
         List<Real> l = new ArrayList<>(dim);
         for(int i=0; i<dim; i++){
@@ -47,4 +54,6 @@ public class MathHelp {
         }
         return DenseVector.valueOf(l);
     }
+
+
 }

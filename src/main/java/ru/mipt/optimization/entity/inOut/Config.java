@@ -49,7 +49,7 @@ public class Config {
     public Config() {
         accuracyOfDomainSearch = DEFAULT_ACCURACY;
         searchRange = DEFAULT_SEARCH_RANGE;
-        algorithm = new Kaczmarz();
+        algorithm = new GradientDescent();
     }
 
     /**
@@ -65,14 +65,15 @@ public class Config {
     /**
      * Configures conditions to stop optimization procedure
      * in the chosen optimization {@link ru.mipt.optimization.entity.inOut.Config#algorithm}
-     * @param error - error of the optimization process
+     * @param error - array of the errors of the optimization process.
+     *               If size of errors array is less than required, rest parameters will be default.
      * @param conditions - flags to switch over special stop conditions.
      *                   See stop criteria in the chosen implementation
      *                   of the {@link ru.mipt.optimization.algorithms.Algorithm} interface.
      * @throws IllegalArgumentException if condition length does not correspond the required one
      * in the chosen implementation of the {@link ru.mipt.optimization.algorithms.Algorithm} interface.
      */
-    public void configureStopCriteria(double error, boolean... conditions) {
+    public void configureStopCriteria(double[] error, boolean... conditions) {
         algorithm.configureStopCriteria(error, conditions);
     }
 

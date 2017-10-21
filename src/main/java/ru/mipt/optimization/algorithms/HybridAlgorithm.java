@@ -2,6 +2,7 @@ package ru.mipt.optimization.algorithms;
 
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
+import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
 import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
 
 import java.util.List;
@@ -12,14 +13,7 @@ import java.util.function.Function;
  * i.e. variations of mixed pure algorithms.
  * Created by Inna on 26.02.2017.
  */
-public abstract class HybridAlgorithm implements Algorithm{
-
-    @Override
-    public Vector<Real> conductOneIteration(Vector<Real> x, CostFunction function) {
-        for (PureAlgorithm p: getPureAlgorithms()) p.conductOneIteration(x, function);
-        //TODO
-        return null;
-    }
+public abstract class HybridAlgorithm extends PureAlgorithm implements Algorithm {
 
     /**
      * Returns the list of pure optimization algorithms to mix in hybrid variation

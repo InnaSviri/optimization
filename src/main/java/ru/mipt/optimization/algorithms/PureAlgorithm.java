@@ -26,6 +26,7 @@ public abstract class PureAlgorithm implements Algorithm {
         Vector<Real> res = x.plus(getAlgorithmStep(x,function));
         if (function.apply(res) == null)
             res = function.getNearestDomainPoint(res, x);
+        else res = function.correctToSearchRange(res);
         return res;
     }
 
@@ -38,7 +39,9 @@ public abstract class PureAlgorithm implements Algorithm {
     /**
      * Configures stop criteria by the common template.
      * See {@link ru.mipt.optimization.algorithms.PureAlgorithm.CommonStopping}  for details.
-     * @param error - error of the optimization process
+     * @param error - errors array of the optimization process in the strict order:
+     *              epsilon - accuracy for evaluating stop conditions.
+     *              If size of errors is less than required, rest parameters will be default.
      * @param conditions - 5 flags to switch over 5 stop conditions, namely, in the strict order:
      *            byDecisionProximity - if true turns on consideration of the decision proximity condition;
      *            byCostFuncChangeRate - if true turns on consideration of the cost function change rate condition
@@ -48,11 +51,14 @@ public abstract class PureAlgorithm implements Algorithm {
      * @throws IllegalArgumentException if condition length is not equal to 5.
      */
     @Override
-    public void configureStopCriteria(double error, boolean... conditions) {
+    public void configureStopCriteria(double[] error, boolean... conditions) {
         if (conditions.length != 5)
             throw new IllegalArgumentException("Wrong length of conditions argument!" +
                     "For configuration stop criteria by the common template  are necessary five criteria.");
-        stopCriteria = new CommonStopping(conditions[0],conditions[1],conditions[2],conditions[3],conditions[4],error);
+        if (error.length < 1)
+            stopCriteria = new CommonStopping(conditions[0],conditions[1],conditions[2],conditions[3],conditions[4]);
+        else stopCriteria =
+                new CommonStopping(conditions[0],conditions[1],conditions[2],conditions[3],conditions[4],error[0]);
     }
 
     // returns delta vector to add to the current point x
@@ -81,8 +87,6 @@ public abstract class PureAlgorithm implements Algorithm {
         private boolean byArgumentsChangeRateNorm;
         private boolean byConstraintsFulfillment;
 
-        double epsilon = DEFAULT_ERROR;
-
         /**
          * Creates CommonStopping object with configured set of stop conditions
          * @param byDecisionProximity - if true turns on consideration of the decision proximity condition
@@ -107,10 +111,11 @@ public abstract class PureAlgorithm implements Algorithm {
          * @param byArgumentsChangeRate - if true turns on consideration of the arguments change rate condition
          * @param byArgumentsChangeRateNorm - if true turns on consideration of the arguments change rate norm condition
          * @param byConstraintsFulfillment - if true turns on consideration of the constraints fulfillment condition
+         * @param epsilon accuracy for evaluating stop conditions
          */
         public CommonStopping(boolean byDecisionProximity, boolean byCostFuncChangeRate, boolean byArgumentsChangeRateNorm,
-                              boolean byArgumentsChangeRate, boolean byConstraintsFulfillment, double error) {
-            epsilon = error;
+                              boolean byArgumentsChangeRate, boolean byConstraintsFulfillment, double epsilon) {
+            this.error = epsilon;
             this.byDecisionProximity = byDecisionProximity;
             this.byCostFuncChangeRate = byCostFuncChangeRate;
             this.byArgumentsChangeRate = byArgumentsChangeRate;
@@ -141,7 +146,7 @@ public abstract class PureAlgorithm implements Algorithm {
             Vector<Real> xk = optProc.getProcedurePoints().peekLast();
             boolean res = true;
             for (int i = 0; i < xk.getDimension(); i++)
-                if (Math.abs(optProc.getCostFunction().getPartialDerivative(xk, i)) > epsilon){
+                if (Math.abs(optProc.getCostFunction().getPartialDerivative(xk, i)) > error){
                     res = false;
                     break;
                 }
@@ -155,7 +160,7 @@ public abstract class PureAlgorithm implements Algorithm {
         }
 
         private boolean checkForCostFuncChangeRate(OptimizationProcedure optProc) {
-            double epsilon1 = 100*epsilon;
+            double epsilon1 = 100*error;
             int size = optProc.getProcedurePoints().size();
             Vector<Real> xk = optProc.getProcedurePoints().get(size-1);
             Vector<Real> xkMinus = optProc.getProcedurePoints().get(size-2);
@@ -164,7 +169,7 @@ public abstract class PureAlgorithm implements Algorithm {
         }
 
         private boolean checkForArgumentsChangeRate(OptimizationProcedure optProc){
-            double delta = Math.sqrt(100*epsilon);
+            double delta = Math.sqrt(100*error);
             int size = optProc.getProcedurePoints().size();
             Vector<Real> xk = optProc.getProcedurePoints().get(size-1);
             Vector<Real> xkMinus = optProc.getProcedurePoints().get(size-2);
@@ -185,7 +190,7 @@ public abstract class PureAlgorithm implements Algorithm {
             Vector<Real> xkMinus = optProc.getProcedurePoints().get(size-2);
             Vector<Real> subtraction = xkMinus.minus(xk);
 
-            return MathHelp.norm(subtraction) < epsilon;
+            return MathHelp.norm(subtraction) < error;
         }
 
     }

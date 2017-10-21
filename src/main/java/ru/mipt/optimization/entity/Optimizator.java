@@ -106,7 +106,7 @@ public class Optimizator<T> {
             public Double apply(Vector<Real> realVector) {
                 return initialFunc.apply(typeConverter.convertPoint(realVector));
             }};
-        return new UndeterminateCostFunc(funcReal, configurations);
+        return new UndeterminateCostFunc(funcReal, dimension, configurations);
     }
 
     //-------------------------------------- inner classes -------------------------------------------------------------

@@ -10,6 +10,8 @@ public abstract class StopCriteria {
 
     protected final static double DEFAULT_ERROR = 0.1;
 
+    protected double error = DEFAULT_ERROR;
+
     /**
      * Checks if optimization procedure must be stopped.
      * Returns true if stop criteria is achieved for the given optimization procedure.
@@ -34,4 +36,7 @@ public abstract class StopCriteria {
      */
     protected abstract boolean specifiedCriteria(OptimizationProcedure optimizationProcedure);
 
+    public double getError() {
+        return error;
+    }
 }

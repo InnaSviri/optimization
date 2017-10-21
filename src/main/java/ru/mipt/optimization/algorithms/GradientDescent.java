@@ -34,7 +34,7 @@ public class GradientDescent extends PureAlgorithm {
     }
 
     @Override
-    public boolean isAble(Function<Vector<Real>, Double> function) {
+    public boolean isAble(CostFunction function) {
         // TODO: 06.10.2017 inspect function
         return true;
     }

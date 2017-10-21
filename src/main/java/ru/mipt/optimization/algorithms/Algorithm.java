@@ -33,7 +33,7 @@ public interface Algorithm{
      * @param function - function to check
      * @return true if can optimize given cost function false otherwise
      */
-    public boolean isAble(Function<Vector<Real>, Double> function);
+    public boolean isAble(CostFunction function);
 
     /**
      * Returns stop criteria of the Algorithm
@@ -43,12 +43,13 @@ public interface Algorithm{
 
     /**
      * Configures conditions to stop optimization procedure
-     * @param error - error of the optimization process
+     * @param errors - array of the errors of the optimization process.
+     *               If size of errors array is less than required, rest parameters will be default.
      * @param conditions - flags to switch over special stop conditions. See concrete implementations.
      * @throws IllegalArgumentException if condition length does not correspond the required one
      * in the concrete implementation.
      */
-    public void configureStopCriteria(double error, boolean... conditions);
+    public void configureStopCriteria(double[] errors, boolean... conditions);
 
     /**
      * Configures algorithm parameters. Number of parameters is clarified in concrete implementations.

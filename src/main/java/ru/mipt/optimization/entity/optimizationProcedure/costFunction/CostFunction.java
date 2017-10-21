@@ -1,8 +1,10 @@
 package ru.mipt.optimization.entity.optimizationProcedure.costFunction;
 
+import java.util.List;
 import java.util.function.Function;
 
 import org.jscience.mathematics.number.Real;
+import org.jscience.mathematics.vector.DenseVector;
 import org.jscience.mathematics.vector.Vector;
 import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
@@ -16,12 +18,14 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
 
     protected final Config config; //interval of the domain search vision TODO replace to the config data class
     private Function<Vector<Real>, Double> functionRule; // rule for mapping argument in its Double cost
+    private final int dimension;
 
-    public CostFunction(Function<Vector<Real>, Double> functionRule, Config configurations) {
+    public CostFunction(Function<Vector<Real>, Double> functionRule, int dimension, Config configurations) {
         if (functionRule == null) throw new IllegalArgumentException("function rule can't be null");
         if (configurations == null) throw new IllegalArgumentException("configurations can't be null");
         this.functionRule = functionRule;
         this.config = configurations;
+        this.dimension = dimension;
     }
 
     @Override
@@ -37,6 +41,24 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
     @Override
     public <V> Function<Vector<Real>, V> andThen(Function<? super Double, ? extends V> after) {
         return functionRule.andThen(after);
+    }
+
+
+    /**
+     * Returns given point with corrected to the search range elements
+     * @param out - point to correct
+     * @return given point with corrected to the search range elements
+     */
+    public Vector<Real> correctToSearchRange(Vector<Real> out) {
+        Real[] toWrite = new Real[out.getDimension()];
+        for (int i = 0; i<out.getDimension(); i++) {
+            if (out.get(i).doubleValue() < config.searchRange[0]) {
+                toWrite[i] = Real.valueOf(config.searchRange[0]);
+            } else if (out.get(i).doubleValue()>config.searchRange[1]) {
+                toWrite[i] = Real.valueOf(config.searchRange[1]);
+            } else toWrite[i] = out.get(i);
+        }
+        return DenseVector.valueOf(toWrite);
     }
 
     /**
@@ -69,6 +91,20 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
      */
     public abstract Vector<Real> getGradient(Vector<Real> x);
 
+    /**
+     * Retirnes gradients in nearest to x n points
+     * @param x - point to calculate subgradients
+     * @param n - number of gradients to calculate
+     * @return gradients in nearest to x n points
+     */
+    public abstract List<Vector<Real>> getSubGradients(Vector<Real> x, int n);
+
+
+    protected void checkDimension(Vector<Real> toCheck) {
+        if (toCheck.getDimension() != dimension)
+            throw new IllegalArgumentException("Dimension of the given point is wrong!");
+    }
+
     //------------------------------------------------------------------------------------------------------------------
 
     public Function<Vector<Real>, Double> getFunctionRule() {
@@ -77,5 +113,9 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
 
     public Config getConfig() {
         return config;
+    }
+
+    public int getDimension() {
+        return dimension;
     }
 }
