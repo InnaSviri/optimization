@@ -75,7 +75,7 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
 
     /**
      * Returns partial derivative in the given direction of this cost function in the given point
-     * @param x point in the domin of the cost function to calculate derivative in.
+     * @param x point in the domain of the cost function to calculate derivative in.
      * @param direction - dimension to calculate derivative in. Must be within bounds [0;x.dimension-1]
      * @return partial derivative in the given direction of this cost function in given point
      * @throws IllegalArgumentException if the given point is out of the domain of the cost function

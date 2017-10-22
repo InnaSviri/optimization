@@ -27,10 +27,12 @@ public class CubicApproximation extends PureAlgorithm {
         double fDerX = function.getPartialDerivative(x,0);
         if (fDerX<0) {
             x1 = x.plus(DenseVector.valueOf(Real.valueOf(h)));
+            if (function.apply(x1) == null) x1 = function.getNearestDomainPoint(x1,x);
             a = x.get(0);
             b = x1.get(0);
         } else {
             x1 = x.minus(DenseVector.valueOf(Real.valueOf(h)));
+            if (function.apply(x1) == null) x1 = function.getNearestDomainPoint(x1,x);
             b = x.get(0);
             a = x1.get(0);
         }
@@ -38,13 +40,19 @@ public class CubicApproximation extends PureAlgorithm {
         if (function.getPartialDerivative(x1,0)*fDerX >= 0) return x1;
         while (b.minus(a).doubleValue()>stopCriteria.getError()) {
             double polinomMin = calculatePolinomMin(a,b,function);
-            double fDerPol = function.getPartialDerivative(DenseVector.valueOf(Real.valueOf(polinomMin)),0);
+            Vector<Real> xPol = DenseVector.valueOf(Real.valueOf(polinomMin));
+            if (function.apply(xPol) == null) xPol =
+                    function.getNearestDomainPoint(xPol,DenseVector.valueOf(a));// TODO: 22.10.2017 не обязательно именно а
+            double fDerPol = function.getPartialDerivative(xPol,0);
             if (fDerPol<0)
-                a = Real.valueOf(polinomMin);
-            else b = a = Real.valueOf(polinomMin);
+                a = xPol.get(0);
+            else b = a = xPol.get(0);
         }
         done = true;
-        return DenseVector.valueOf(b.plus(a).divide(2));
+        Vector<Real> res = DenseVector.valueOf(b.plus(a).divide(2));
+        if (function.apply(res) == null) res =
+                function.getNearestDomainPoint(res,DenseVector.valueOf(a));// TODO: 22.10.2017 не обязательно именно а
+        return res;
     }
 
     @Override
