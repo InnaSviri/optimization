@@ -11,6 +11,7 @@ import javax.measure.unit.SI;
 import java.util.function.Function;
 
 /**
+ * Represents the cubic approximation algorithm for one-dimensional function
  * Created by Inna on 21.10.2017.
  */
 public class CubicApproximation extends PureAlgorithm {

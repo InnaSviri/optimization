@@ -89,6 +89,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
      *            commonStopping - if true turns on consideration of
      *              {@link ru.mipt.optimization.algorithms.PureAlgorithm.CommonStopping} criteria.
      *              otherwise only M1 criteria is used. If true size of conditions must be 6.
+     *              It is strongly recommended to use common stopping - M1 criteria works only on differentiable functions
      *            byDecisionProximity - if true turns on consideration of the decision proximity condition;
      *            byCostFuncChangeRate - if true turns on consideration of the cost function change rate condition
      *            byArgumentsChangeRate - if true turns on consideration of the arguments change rate condition
@@ -143,7 +144,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
             if (j<k-1) mk.add((double) 100/(j+1));
             else ek.add((double) 1/j);
         }
-        CommonStopping cs = new CommonStopping(true, true,true,true,true,0.1);
+        CommonStopping cs = new CommonStopping(true,true,true,true,true,0.1);
         return new M1Stopping(ek, mk, cs);
     }
 
@@ -222,6 +223,8 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 //------------------------------------------------ inner -----------------------------------------------------------
 
     private class M1Stopping extends StopCriteria{
+        private final Queue<Double> DEFAULT_EK = new LinkedList<>();
+        private final Queue<Double> DEFAULT_MK = new LinkedList<>();
 
         private StopCriteria baseStopping;
         private double curSum = 0;
