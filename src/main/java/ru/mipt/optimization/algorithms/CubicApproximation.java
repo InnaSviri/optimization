@@ -37,21 +37,24 @@ public class CubicApproximation extends PureAlgorithm {
             a = x1.get(0);
         }
 
+        Vector<Real> prevXPolinom = x1;
+
         if (function.getPartialDerivative(x1,0)*fDerX >= 0) return x1;
         while (b.minus(a).doubleValue()>stopCriteria.getError()) {
             double polinomMin = calculatePolinomMin(a,b,function);
             Vector<Real> xPol = DenseVector.valueOf(Real.valueOf(polinomMin));
             if (function.apply(xPol) == null) xPol =
-                    function.getNearestDomainPoint(xPol,DenseVector.valueOf(a));// TODO: 22.10.2017 не обязательно именно а
+                    function.getNearestDomainPoint(xPol,prevXPolinom);
             double fDerPol = function.getPartialDerivative(xPol,0);
             if (fDerPol<0)
                 a = xPol.get(0);
             else b = a = xPol.get(0);
+            prevXPolinom = xPol;
         }
         done = true;
         Vector<Real> res = DenseVector.valueOf(b.plus(a).divide(2));
         if (function.apply(res) == null) res =
-                function.getNearestDomainPoint(res,DenseVector.valueOf(a));// TODO: 22.10.2017 не обязательно именно а
+                function.getNearestDomainPoint(res,prevXPolinom);
         return res;
     }
 

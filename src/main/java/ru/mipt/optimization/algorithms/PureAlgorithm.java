@@ -21,12 +21,11 @@ public abstract class PureAlgorithm implements Algorithm {
 
     @Override
     public Vector<Real> conductOneIteration(Vector<Real> x, CostFunction function) throws IllegalArgumentException {
-        //// TODO: 29.05.2017
 
         Vector<Real> res = x.plus(getAlgorithmStep(x,function));
         if (function.apply(res) == null)
             res = function.getNearestDomainPoint(res, x);
-        else res = function.correctToSearchRange(res);
+        else res = function.correctToSearchRange(res, x);
         return res;
     }
 

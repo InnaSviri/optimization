@@ -43,13 +43,24 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
         return functionRule.andThen(after);
     }
 
-
     /**
      * Returns given point with corrected to the search range elements
-     * @param out - point to correct
+     * @param toCorrect - point to correct
+     * @param directionPoint - direction point to correct given point in the given direction.
+     *                       If is null returned point would not be checked on belonging to the domain.
      * @return given point with corrected to the search range elements
      */
-    public Vector<Real> correctToSearchRange(Vector<Real> out) {
+    public Vector<Real> correctToSearchRange(Vector<Real> toCorrect, Vector<Real> directionPoint) {
+        if (toCorrect == null) throw new IllegalArgumentException("Point to correct can't be null!");
+        checkDimension(toCorrect);
+        Vector res = correctToSearchRange(toCorrect);
+        if (directionPoint != null && apply(res) == null)
+            res = getNearestDomainPoint(res, directionPoint);
+        return res;
+    }
+
+    //corrects to the search range without domain check
+    protected Vector<Real> correctToSearchRange(Vector<Real> out) {
         Real[] toWrite = new Real[out.getDimension()];
         for (int i = 0; i<out.getDimension(); i++) {
             if (out.get(i).doubleValue() < config.searchRange[0]) {
