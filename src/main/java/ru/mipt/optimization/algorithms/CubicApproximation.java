@@ -15,7 +15,8 @@ import java.util.function.Function;
  * Created by Inna on 21.10.2017.
  */
 public class CubicApproximation extends PureAlgorithm {
-    private double h = 0.5;
+    private static final double DEFAULT_H = 0.5;
+    private double h;
 
     private boolean done = false;
 
@@ -75,6 +76,12 @@ public class CubicApproximation extends PureAlgorithm {
         if (params.length != 1) return false;
         h = params[0];
         return true;
+    }
+
+    @Override
+    protected void setDefaultParameters() {
+        h = DEFAULT_H;
+        stopCriteria = new SimpleStopping();
     }
 
     @Override

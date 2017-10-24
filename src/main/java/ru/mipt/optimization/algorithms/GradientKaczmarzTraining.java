@@ -50,14 +50,17 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
     /**
      * Configures algorithm parameters.
      * @param params - algorithm parameters in the strict order:
-     *               step - value of the step of the one dimention search algorithm;
-     *               relaxationParameter - value of the step of the algorithm.
+     *               step - value of the step of the one dimension search algorithm;
+     *               relaxationParameter - value of the step of the direction search algorithm;
+     *               error - error for stopping one dimension search algorithm.
      *               If size of parameters is less than required, rest parameters will be default.
-     * @return true if size of parameters corresponds required two.
+     * @return true if size of parameters corresponds required 3.
      */
     @Override
     public boolean setParams(double... params) {
-        if (params.length != 2) return false;
+        if (params.length != 3) return false;
+        double[] error = {params[2]};
+        oneDimSearchAlgo.configureStopCriteria(error, true);
         return oneDimSearchAlgo.setParams(params[0])&& kaczmarz.setParams(params[1]);
     }
 

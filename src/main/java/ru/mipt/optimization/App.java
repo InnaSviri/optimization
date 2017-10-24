@@ -28,11 +28,11 @@ public class App {
         Class<Integer> clazz = Integer.class;
 
         GradientKaczmarzTraining testtttAlgo = new GradientKaczmarzTraining();
-        testtttAlgo.setParams(1.2,0.5);
         double[] serchRange = {-1000, 1000};
         Config config = new Config(1, serchRange, testtttAlgo);
         double[] errors = {0.01, 3, 0.009, 0.01, 0.1, 50, 60, 30};
         config.configureStopCriteria(errors,true,true,true,true,true,true);
+        config.setAlgorithmParams(1.2,0.5,0.5);
 
         Config config1 = new Config();
 
