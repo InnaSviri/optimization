@@ -60,8 +60,17 @@ public abstract class PureAlgorithm implements Algorithm {
                 new CommonStopping(conditions[0],conditions[1],conditions[2],conditions[3],conditions[4],error[0]);
     }
 
+    @Override
+    public String print() {
+        return getName() + ":  " + printParams() + "; "
+                + stopCriteria.toString();
+    }
+
     // returns delta vector to add to the current point x
     protected abstract Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function);
+
+    // prints algorithms configuration parameters
+    protected abstract String printParams();
 
     protected void setDefaultParameters() {
         stopCriteria = new CommonStopping(true,true,true,true, true);
@@ -137,6 +146,20 @@ public abstract class PureAlgorithm implements Algorithm {
 
             return decisionProximity && constraintsFulfillment && costFuncChangeRate
                     && argumentsChangeRate && argumentsChangeRateNorm;
+        }
+
+        @Override
+        protected String getName() {
+            return "CommonStopping";
+        }
+
+        @Override
+        protected String printParams() {
+            return "byArgumentsChangeRateNorm = " + byArgumentsChangeRateNorm
+                    + "; byArgumentsChangeRate = " + byArgumentsChangeRate
+                    + "; byCostFuncChangeRate = " + byCostFuncChangeRate
+                    + "; byConstraintsFulfillment = " + byConstraintsFulfillment
+                    + "; byDecisionProximity = " + byDecisionProximity;
         }
 
         //--------------------------------------------------------------------------------------------------------------

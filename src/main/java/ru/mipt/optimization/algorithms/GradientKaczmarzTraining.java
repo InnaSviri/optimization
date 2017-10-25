@@ -34,7 +34,15 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
     @Override
     List<PureAlgorithm> getPureAlgorithms() {
-        return null;
+        List<PureAlgorithm> inners = new ArrayList<>();
+        inners.add(kaczmarz);
+        inners.add(oneDimSearchAlgo);
+        return inners;
+    }
+
+    @Override
+    String printOwnParams() {
+        return "MAX_SUBGRAD_NUM = " + MAX_SUBGRAD_NUM;
     }
 
     @Override
@@ -255,6 +263,18 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
             guideAlgorithm();
             boolean baseCriteria = !(baseStopping == null) && baseStopping.isAchieved(optimizationProcedure);
             return done || baseCriteria;
+        }
+
+        @Override
+        protected String getName() {
+            return "M1Stopping";
+        }
+
+        @Override
+        protected String printParams() {
+            return "mk = " + mk
+                    + "; ek = " + ek
+                    + "; baseStopping = " + baseStopping.toString();
         }
 
         private void guideAlgorithm() {

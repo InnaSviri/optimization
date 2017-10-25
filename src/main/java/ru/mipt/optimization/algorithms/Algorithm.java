@@ -64,4 +64,10 @@ public interface Algorithm{
      */
     public String getName();
 
+    /**
+     * Prints in String algorithm with its configuration
+     * @return String with algorithms configuration
+     */
+    public String print();
+
 }

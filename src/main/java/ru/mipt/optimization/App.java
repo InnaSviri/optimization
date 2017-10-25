@@ -54,11 +54,15 @@ public class App {
         optTest.optimize(config, startPoits);
         LinkedList<Result<Integer>> results = optTest.getHistory().getSortedResults(true,false);
         Set<Integer[]> finalResult = new HashSet<>();
-        for (Result<Integer> res: results)
-            for (Result<Integer>.OneShot oneSh: res.getSortedResults(true,false)) {
+        for (Result<Integer> res: results) {
+            System.out.print(res.getConfigurations().toString() + "\n");
+            for (Result<Integer>.OneShot oneSh : res.getSortedResults(true, false)) {
                 finalResult.add(oneSh.finalDecision.getKey());
+                System.out.print(oneSh.print());
             }
+        }
         finalResult.size();
+
     }
 
 }

@@ -36,7 +36,19 @@ public abstract class StopCriteria {
      */
     protected abstract boolean specifiedCriteria(OptimizationProcedure optimizationProcedure);
 
+    //name of the specified stopping
+    protected abstract String getName();
+
+    // prints parameters of the specified stopping
+    protected abstract String printParams();
+
     public double getError() {
         return error;
+    }
+
+    @Override
+    public String toString() {
+        return "StopCriteria by " + getName() + " template: [" + printParams()
+                + "; Error = " + error + "]";
     }
 }

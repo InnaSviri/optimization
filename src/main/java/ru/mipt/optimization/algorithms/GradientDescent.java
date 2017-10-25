@@ -28,6 +28,11 @@ public class GradientDescent extends PureAlgorithm {
     }
 
     @Override
+    protected String printParams() {
+        return "Step = " + step;
+    }
+
+    @Override
     protected void setDefaultParameters() {
         stopCriteria = new CommonStopping(true,true,true,true, false);
         step = DEFAULT_STEP;

@@ -60,6 +60,11 @@ public class CubicApproximation extends PureAlgorithm {
     }
 
     @Override
+    protected String printParams() {
+        return "h = " + h;
+    }
+
+    @Override
     public boolean isAble(CostFunction function) {
         return function.getDimension() == 1;
     }
@@ -142,6 +147,16 @@ public class CubicApproximation extends PureAlgorithm {
         @Override
         protected boolean specifiedCriteria(OptimizationProcedure optimizationProcedure) {
             return done;
+        }
+
+        @Override
+        protected String getName() {
+            return "SimpleStopping";
+        }
+
+        @Override
+        protected String printParams() {
+            return "";
         }
     }
 }

@@ -108,4 +108,14 @@ public class Config {
     public static int getDefaultMaxRecursionNum() {
         return DEFAULT_MAX_RECURSION_NUM;
     }
+
+    @Override
+    public String toString() {
+        String str = "Congig: ";
+        str += "accuracy of domain search is "+
+                    accuracyOfDomainSearch + ", search range is " +
+                    searchRange +"; \n algorithm is " +
+                    algorithm.print();
+        return str;
+    }
 }

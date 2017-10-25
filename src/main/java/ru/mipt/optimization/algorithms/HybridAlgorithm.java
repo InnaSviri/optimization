@@ -21,4 +21,19 @@ public abstract class HybridAlgorithm extends PureAlgorithm implements Algorithm
      */
     abstract List<PureAlgorithm> getPureAlgorithms();
 
+    /**
+     * Prints in String own parameters of the hybrid algorithm
+     * @return String with own parameters of the hybrid algorithm
+     */
+    abstract String printOwnParams();
+
+    @Override
+    protected String printParams() {
+        String str = "inner algorithms[ ";
+        for (PureAlgorithm innAlg: getPureAlgorithms())
+         str += innAlg.print() + "; ";
+        str = str.substring(0, str.length()-2).concat(" ]\n own parameters: ");
+        str += printOwnParams();
+        return str;
+    }
 }

@@ -95,4 +95,9 @@ public class Kaczmarz extends PureAlgorithm{
     protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
         return getAlgorithmStep(x, function.getGradient(x),Real.valueOf(-10000));
     }
+
+    @Override
+    protected String printParams() {
+        return "relaxationParameter = " + relaxationParameter;
+    }
 }

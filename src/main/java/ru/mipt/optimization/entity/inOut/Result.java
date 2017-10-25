@@ -226,6 +226,25 @@ public class Result<T> {
             this.time = optimizationProcedure.getOptimizationTime();
             this.optimizationProcedureEvolution = parser.parseOptimizationProcedureEvolution();
         }
+
+        public String print() {
+            String str = "OneShot: "
+                    + "start point = " + printPoint(startPoint)
+                    + "; time = " + time
+                    + "; final decision = [" + printPoint(finalDecision.getKey()) + ", "
+                    + finalDecision.getValue() + "]\n";
+            for(Map.Entry<T[], Double> point: optimizationProcedureEvolution.entrySet())
+                str +=  printPoint(point.getKey()) + ", " +point.getValue() + "\n";
+            return str;
+        }
+
+        private String printPoint(T[] point) {
+            String str = "(";
+            for (T t: point)
+                str += t.toString() + ", ";
+            str = str.substring(0, str.length()-2).concat(")");
+            return str;
+        }
     }
 
     // parses results from current optimizationProcedure
