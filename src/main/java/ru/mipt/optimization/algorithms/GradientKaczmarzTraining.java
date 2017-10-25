@@ -245,15 +245,22 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         int i = 0;
         int qk = 0;
 
+        private final String ekStr;
+        private final String mkStr;
+
         public M1Stopping(Queue<Double> ek, Queue<Double> mk){
             this.ek = ek;
             this.mk = mk;
+            ekStr = ek.toString();
+            mkStr = mk.toString();
         }
 
 
         public M1Stopping(Queue<Double> ek, Queue<Double> mk, StopCriteria baseStopping){
             this.ek = ek;
             this.mk = mk;
+            ekStr = ek.toString();
+            mkStr = mk.toString();
             this.baseStopping = baseStopping;
         }
 
@@ -272,8 +279,8 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
         @Override
         protected String printParams() {
-            return "mk = " + mk
-                    + "; ek = " + ek
+            return "mk = " + mkStr
+                    + "; ek = " + ekStr
                     + "; baseStopping = " + baseStopping.toString();
         }
 

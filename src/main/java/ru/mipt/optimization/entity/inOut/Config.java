@@ -112,9 +112,9 @@ public class Config {
     @Override
     public String toString() {
         String str = "Congig: ";
-        str += "accuracy of domain search is "+
-                    accuracyOfDomainSearch + ", search range is " +
-                    searchRange +"; \n algorithm is " +
+        str += "accuracy of domain search is "+ accuracyOfDomainSearch
+                + ", search range is [" + searchRange[0] + ", " + searchRange[1] + "]"
+                     +"; \n algorithm is " +
                     algorithm.print();
         return str;
     }
