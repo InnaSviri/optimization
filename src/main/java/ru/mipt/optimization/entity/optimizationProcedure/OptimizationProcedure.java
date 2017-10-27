@@ -18,7 +18,7 @@ import java.util.LinkedList;
  */
 public class OptimizationProcedure {
 
-    private final VaryingParams algoVarParams;
+    private VaryingParams algoVarParams;
 
     private Timer timer = new Timer();
     private final Config config; // configurations (selected optimization algorithm and condition to stop optimization procedure)
@@ -45,7 +45,6 @@ public class OptimizationProcedure {
 
         this.config = config;
         this.costFunction = costFunction;
-        this.algoVarParams = config.getAlgorithmVaryingParamsCongig();
     }
 
     /**
@@ -60,6 +59,7 @@ public class OptimizationProcedure {
                 "of the given cost function! ");
         procedurePoints.clear();
         procedurePoints.add(startPoint);
+        this.algoVarParams = config.getAlgorithmVaryingParamsCongig();
         timer.start();
         optimize();
         timer.stop();
