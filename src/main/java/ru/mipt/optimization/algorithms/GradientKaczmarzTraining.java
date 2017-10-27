@@ -233,7 +233,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         Config conf = new Config(0.01, searchRange, oneDimSearchAlgo);
         CostFunction oneDimCost = new UndeterminateCostFunc(f,1,conf);
         OptimizationProcedure optProc = new OptimizationProcedure(oneDimCost, conf);
-        Vector<Real> start = MathHelp.getTwinVector(1, Real.valueOf(0.9));
+        Vector<Real> start = MathHelp.getTwinVector(1, Real.ZERO);
         optProc.start(start);
         Tuple<Vector<Real>, Double> res = optProc.getOptimizedDecision();
         return res.x.get(0).doubleValue();
