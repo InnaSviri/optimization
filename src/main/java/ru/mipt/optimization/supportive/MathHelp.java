@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class MathHelp {
 
-    /*public static ??? calculateDomain(??? lambda)*/
+    /*public static ??? calculateDomain ??? */
 
     public static double getDistance(Vector<Real> one, Vector<Real> two) {
         if (one == null || two == null
@@ -36,24 +36,21 @@ public class MathHelp {
     }
 
     public static Vector<Real> normal(Vector<Real> x) {
-        return (norm(x)==0) ? nulVecor(x.getDimension())
+        return (norm(x)==0) ? getTwinVector(x.getDimension(), Real.ZERO)
                 : x.times(Real.valueOf(1/norm(x)));
     }
 
-    public static Vector<Real> getZeroVector(int dim) {
-        Real[] nulReals = new Real[dim];
+    /**
+     * Returns vector with all identical elements value of r parameter
+     * @param dim - dimension of required vector
+     * @param r - value to set to all the elements of the vector
+     * @return vector with all identical elements value of r parameter
+     */
+    public static Vector<Real> getTwinVector(int dim, Real r) {
+        Real[] reals = new Real[dim];
         for (int i = 0; i < dim; i++ )
-            nulReals[i] = Real.ZERO;
-        return DenseVector.valueOf(nulReals);
+            reals[i] = r;
+        return DenseVector.valueOf(reals);
     }
-
-    private static Vector<Real> nulVecor(int dim) {
-        List<Real> l = new ArrayList<>(dim);
-        for(int i=0; i<dim; i++){
-            l.add(Real.ZERO);
-        }
-        return DenseVector.valueOf(l);
-    }
-
 
 }

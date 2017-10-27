@@ -168,7 +168,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
     }
 
     private Vector<Real> outerLoop(Vector<Real> x, CostFunction function) {
-        Vector<Real> nulVec = MathHelp.getZeroVector(x.getDimension());
+        Vector<Real> nulVec = MathHelp.getTwinVector(x.getDimension(), Real.ZERO);
         currentVarParams.curDirection = DenseVector.valueOf(nulVec);
         currentVarParams.prevGradient = DenseVector.valueOf(nulVec);
         return innerLoop(x, function, currentVarParams.curDirection, currentVarParams.prevGradient);
@@ -176,7 +176,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
     private Vector<Real> innerLoop(Vector<Real> x, CostFunction function, Vector<Real> si, Vector<Real> gPrev) {
         Vector<Real> curGrad = function.getGradient(x);
-        if (curGrad.equals(MathHelp.getZeroVector(x.getDimension()))) {
+        if (curGrad.equals(MathHelp.getTwinVector(x.getDimension(), Real.ZERO))) {
             currentVarParams.done = true;
             return x;
         }
@@ -233,7 +233,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         Config conf = new Config(0.01, searchRange, oneDimSearchAlgo);
         CostFunction oneDimCost = new UndeterminateCostFunc(f,1,conf);
         OptimizationProcedure optProc = new OptimizationProcedure(oneDimCost, conf);
-        Vector<Real> start = MathHelp.getZeroVector(1);
+        Vector<Real> start = MathHelp.getTwinVector(1, Real.valueOf(0.9));
         optProc.start(start);
         Tuple<Vector<Real>, Double> res = optProc.getOptimizedDecision();
         return res.x.get(0).doubleValue();
