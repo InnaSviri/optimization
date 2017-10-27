@@ -3,6 +3,7 @@ package ru.mipt.optimization.entity.inOut;
 import ru.mipt.optimization.algorithms.Algorithm;
 import ru.mipt.optimization.algorithms.GradientDescent;
 import ru.mipt.optimization.algorithms.Kaczmarz;
+import ru.mipt.optimization.algorithms.VaryingParams;
 import ru.mipt.optimization.entity.optimizationProcedure.StopCriteria;
 
 /**
@@ -96,6 +97,10 @@ public class Config {
     }
 
     public Algorithm getAlgorithm() { return algorithm;}
+
+    public VaryingParams getAlgorithmVaryingParamsCongig() {
+        return algorithm.getVaryingParamsConfiguration();
+    }
 
     public static double getDefaultDomainAccuracy() {
         return DEFAULT_ACCURACY;

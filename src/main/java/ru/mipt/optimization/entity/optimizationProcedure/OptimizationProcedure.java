@@ -2,6 +2,7 @@ package ru.mipt.optimization.entity.optimizationProcedure;
 
 import org.jscience.mathematics.number.Real;
 import org.jscience.mathematics.vector.Vector;
+import ru.mipt.optimization.algorithms.VaryingParams;
 import ru.mipt.optimization.entity.inOut.Config;
 import ru.mipt.optimization.entity.typeWrapper.FieldWrapper;
 import ru.mipt.optimization.entity.optimizationProcedure.costFunction.CostFunction;
@@ -16,6 +17,8 @@ import java.util.LinkedList;
  * Created by Inna on 28.02.2017.
  */
 public class OptimizationProcedure {
+
+    private final VaryingParams algoVarParams;
 
     private Timer timer = new Timer();
     private final Config config; // configurations (selected optimization algorithm and condition to stop optimization procedure)
@@ -42,6 +45,7 @@ public class OptimizationProcedure {
 
         this.config = config;
         this.costFunction = costFunction;
+        this.algoVarParams = config.getAlgorithmVaryingParamsCongig();
     }
 
     /**
@@ -85,7 +89,7 @@ public class OptimizationProcedure {
             throw new IllegalArgumentException("Can't optimize without start point. Use method start(Vector startPoint)");
 
         Vector<Real> curPoint = procedurePoints.getLast();
-        Vector<Real> nextPoint = config.getAlgorithm().conductOneIteration(curPoint, costFunction);
+        Vector<Real> nextPoint = config.getAlgorithm().conductOneIteration(curPoint, costFunction, algoVarParams);
         if (!isStuck()) {
             procedurePoints.add(nextPoint);
             if (!config.getAlgorithm().getStopCriteria().isAchieved(this)) optimize();
@@ -119,6 +123,10 @@ public class OptimizationProcedure {
     }
 
     public Config getConfigurations() { return config;}
+
+    public VaryingParams getAlgoVarParams() {
+        return algoVarParams;
+    }
 
     //------------------------------------------------------------------------------------------------------------------
 

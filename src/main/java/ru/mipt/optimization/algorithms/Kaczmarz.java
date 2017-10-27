@@ -92,7 +92,7 @@ public class Kaczmarz extends PureAlgorithm{
 
     // TODO: 18.10.2017 don't work 
     @Override
-    protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
+    protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function, VaryingParams vp) {
         return getAlgorithmStep(x, function.getGradient(x),Real.valueOf(-10000));
     }
 

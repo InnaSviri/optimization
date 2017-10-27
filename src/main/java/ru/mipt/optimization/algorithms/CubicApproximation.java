@@ -18,10 +18,9 @@ public class CubicApproximation extends PureAlgorithm {
     private static final double DEFAULT_H = 0.5;
     private double h;
 
-    private boolean done = false;
 
     @Override
-    protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
+    protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function, VaryingParams vp) {
         Vector<Real> x1;
         Real a;
         Real b;
@@ -52,7 +51,7 @@ public class CubicApproximation extends PureAlgorithm {
             else b = a = xPol.get(0);
             prevXPolinom = xPol;
         }
-        done = true;
+        vp.done = true;
         Vector<Real> res = DenseVector.valueOf(b.plus(a).divide(2));
         if (function.apply(res) == null) res =
                 function.getNearestDomainPoint(res,prevXPolinom);
@@ -146,7 +145,7 @@ public class CubicApproximation extends PureAlgorithm {
 
         @Override
         protected boolean specifiedCriteria(OptimizationProcedure optimizationProcedure) {
-            return done;
+            return optimizationProcedure.getAlgoVarParams().done;
         }
 
         @Override

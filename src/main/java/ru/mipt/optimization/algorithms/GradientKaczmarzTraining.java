@@ -24,12 +24,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
     private Kaczmarz kaczmarz;
     private CubicApproximation oneDimSearchAlgo;
 
-    // TODO: 19.10.2017 переделать, сейчас возможен вызов извне другой оптимизационной процедурой и сбой параметров
-    private Vector<Real> curDirection; // current direction vector
-    private Vector<Real> prevGradient; // gradient vector on the previous iteration
-    private boolean anew = true; // flag to move back to first outer loop
-
-    boolean done = false;
+    private GuideParameters guideParams;
 
 
     @Override
@@ -41,13 +36,22 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
     }
 
     @Override
+    public VaryingParams getVaryingParamsConfiguration() {
+        return new VaryingParams(guideParams.ek, guideParams.mk);
+    }
+
+    @Override
     String printOwnParams() {
         return "MAX_SUBGRAD_NUM = " + MAX_SUBGRAD_NUM;
     }
 
+    // TODO: 27.10.2017 remove from field
+    private VaryingParams currentVarParams; // parameters to conduct current iteration 
     @Override
-    protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function) {
-        return anew ? outerLoop(x, function) : innerLoop(x, function, curDirection, prevGradient);
+    protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function, VaryingParams varParams) {
+        currentVarParams = varParams;
+        return currentVarParams.anew ? outerLoop(x, function)
+                : innerLoop(x, function, currentVarParams.curDirection, currentVarParams.prevGradient);
     }
 
     @Override
@@ -57,19 +61,37 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
     /**
      * Configures algorithm parameters.
-     * @param params - algorithm parameters in the strict order:
+     * @param params - 2k+3 algorithm parameters in the strict order:
+     *               k - number of iterations of the outer loop of the algorithm (is used Math.round for convertation);
+     *               e1,...,ek - parameters for evaluation outer loop criteria;
+     *               m1,...,mk - parameters for evaluation inner loop criteria;
      *               step - value of the step of the one dimension search algorithm;
-     *               relaxationParameter - value of the step of the direction search algorithm;
-     *               error - error for stopping one dimension search algorithm.
+     *               relaxationParameter - value of the step of the direction search algorithm
      *               If size of parameters is less than required, rest parameters will be default.
-     * @return true if size of parameters corresponds required 3.
+     * @return true if size of parameters corresponds required 2k+3.
      */
     @Override
     public boolean setParams(double... params) {
-        if (params.length != 3) return false;
-        double[] error = {params[2]};
-        oneDimSearchAlgo.configureStopCriteria(error, true);
-        return oneDimSearchAlgo.setParams(params[0])&& kaczmarz.setParams(params[1]);
+        if (params.length < 1) return false;
+        int k = (int)Math.round(params[0]);
+
+        int i = 1;
+        Queue<Double> ek = new LinkedList<>();
+        Queue<Double> mk = new LinkedList<>();
+        boolean res = true;
+        while(i < params.length) {
+            if (i<k+1) ek.add(params[i]);
+            else if (i < 2*k+1) mk.add(params[i]);
+            else if (i == 2*k+1) res = res & oneDimSearchAlgo.setParams(params[i]);
+            else res = res && kaczmarz.setParams(params[i]);
+            i++;
+        }
+        if (mk.size() == k && ek.size() == k)
+            guideParams = new GuideParameters(ek,mk);
+        else if (ek.size() == k)
+            guideParams = new GuideParameters(ek, VaryingParams.DEFAULT_MK);
+
+        return i == 2*k+2 && res;
     }
 
     @Override
@@ -85,16 +107,15 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         kaczmarz.setDefaultParameters();
         oneDimSearchAlgo.setDefaultParameters();
         stopCriteria = createDefaultM1Stopping();
+        guideParams = new GuideParameters(VaryingParams.DEFAULT_EK, VaryingParams.DEFAULT_MK);
     }
 
-    // TODO: 20.10.2017 error убрать в конец если человек не хочет пользоваться коммонстопинг
     /**
      *
-     * @param errors - k+2 parameters to evaluate stop and conditions, namely, in the strict order:
-     *               error - accuracy for evaluating stop conditions in the CommonStopping criteria;
-     *               k - number of iterations of the outer loop of the algorithm (is used Math.round for convertation);
-     *               e1,...,ek - parameters for evaluation outer loop criteria;
-     *               m1,...,mk - parameters for evaluation inner loop criteria;
+     * @param errors - 2 parameters to evaluate stop conditions, namely, in the strict order:
+     *               errorOneDimAlgo - error for stopping one dimension search algorithm;
+     *               error - accuracy for evaluating stop conditions in the CommonStopping criteria.
+     *                      Can be absent only if flag of common stopping is off.
      * @param conditions - flags to switch over stop conditions. It size must be greater than 1.
      *            Namely, in the strict order:
      *            commonStopping - if true turns on consideration of
@@ -106,29 +127,19 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
      *            byArgumentsChangeRate - if true turns on consideration of the arguments change rate condition
      *            byArgumentsChangeNorm - if true turns on consideration of the arguments change rate norm condition
      *            byConstraintsFulfillment - if true turns on consideration of the constraints fulfillment condition
-     * @throws IllegalArgumentException if size of errors isn't 2*k+2 or errors is empty
-     *  or size of conditions isn't 1(and first is false) or 6.
+     * @throws IllegalArgumentException if size of errors isn't 2 or size of conditions isn't 1(and first is false) or 6.
      */
     @Override
     public void configureStopCriteria(double[] errors, boolean... conditions) {
-        if (errors.length < 2)
-            throw new IllegalArgumentException(" Too small size of errors. See java doc");
-        int k = (int)Math.round(errors[1]);
-        if (errors.length != 2*k+2)
-            throw new IllegalArgumentException(" Wrong size of errors. See java doc");
-
-        Queue<Double> ek = new LinkedList<>();
-        Queue<Double> mk = new LinkedList<>();
-        for(int j=2; j<errors.length; j++){
-            if (j<k+2) ek.add(errors[j]);
-            else mk.add(errors[j]);
-        }
+        if (errors.length < 1) throw new IllegalArgumentException(" Wrong size of errors. See java doc");
+        double[] error = {errors[0]};
+        oneDimSearchAlgo.configureStopCriteria(error, true);
 
         switch (conditions.length) {
             case 1 :
                 if (conditions[0])
                     throw new IllegalArgumentException("For configuration CommonStopping size of conditions must 6!");
-                stopCriteria = new M1Stopping(ek, mk);
+                stopCriteria = new M1Stopping();
                 break;
             case 6:
                 boolean[] commonStopping = new boolean[conditions.length-1];
@@ -139,8 +150,11 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
                     }
                     commonStopping[i-1] = conditions[i];
                 }
-                super.configureStopCriteria(errors, commonStopping);
-                stopCriteria = new M1Stopping(ek, mk, this.stopCriteria);
+                if (errors.length < 2)
+                    throw new IllegalArgumentException("For configuration CommonStopping size of errors must 2!");
+                double[] commonStErr = {errors[1]};
+                super.configureStopCriteria(commonStErr, commonStopping);
+                stopCriteria = new M1Stopping(this.stopCriteria);
                 break;
             default:
                 throw new IllegalArgumentException("Size of conditions isn't 1 or 6");
@@ -148,47 +162,42 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
     }
 
     private M1Stopping createDefaultM1Stopping() {
-        int k = 10;
-        Queue<Double> ek = new LinkedList<>();
-        Queue<Double> mk = new LinkedList<>();
-        for(int j=0; j<2*k; j++){
-            if (j<k-1) mk.add((double) 100/(j+1));
-            else ek.add((double) 1/j);
-        }
+
         CommonStopping cs = new CommonStopping(true,true,true,true,true,0.1);
-        return new M1Stopping(ek, mk, cs);
+        return new M1Stopping(cs);
     }
 
     private Vector<Real> outerLoop(Vector<Real> x, CostFunction function) {
         Vector<Real> nulVec = MathHelp.getZeroVector(x.getDimension());
-        curDirection = DenseVector.valueOf(nulVec);
-        prevGradient = DenseVector.valueOf(nulVec);
-        return innerLoop(x, function, curDirection, prevGradient);
+        currentVarParams.curDirection = DenseVector.valueOf(nulVec);
+        currentVarParams.prevGradient = DenseVector.valueOf(nulVec);
+        return innerLoop(x, function, currentVarParams.curDirection, currentVarParams.prevGradient);
     }
 
     private Vector<Real> innerLoop(Vector<Real> x, CostFunction function, Vector<Real> si, Vector<Real> gPrev) {
         Vector<Real> curGrad = function.getGradient(x);
         if (curGrad.equals(MathHelp.getZeroVector(x.getDimension()))) {
-            done = true;
+            currentVarParams.done = true;
             return x;
         }
-        if (curDirection.times(curGrad).isLargerThan(Real.ZERO)) {
+        if (currentVarParams.curDirection.times(curGrad).isLargerThan(Real.ZERO)) {
             List<Vector<Real>> subgradients = function.getSubGradients(x, MAX_SUBGRAD_NUM);
             Collections.sort(subgradients, getSubgradComparator());
             if (!subgradients.isEmpty()) curGrad = subgradients.get(0); //nonetheless required condition may be not fulfilled
         }
 
-        Vector<Real> newDirection = kaczmarz.getAlgorithmStep(curDirection, curGrad, getPi(curGrad), Real.ONE).plus(curDirection);
-        curDirection = newDirection;
+        Vector<Real> newDirection = kaczmarz.getAlgorithmStep(currentVarParams.curDirection, curGrad, getPi(curGrad), Real.ONE)
+                .plus(currentVarParams.curDirection);
+        currentVarParams.curDirection = newDirection;
         Double gamma = getOptimizedGamma(x,function);
-        prevGradient = curGrad;
+        currentVarParams.prevGradient = curGrad;
         return newDirection.times(Real.valueOf(-gamma));
     }
 
     //returns training vector pi
     private Vector<Real> getPi(Vector<Real> curGrad) {
-        return (curGrad.times(prevGradient).isLessThan(Real.ZERO))
-                ? curGrad.minus(kaczmarz.getAlgorithmStep(curGrad, prevGradient, Real.ZERO))
+        return (curGrad.times(currentVarParams.prevGradient).isLessThan(Real.ZERO))
+                ? curGrad.minus(kaczmarz.getAlgorithmStep(curGrad, currentVarParams.prevGradient, Real.ZERO))
                 : curGrad;
     }
 
@@ -197,11 +206,11 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
             @Override
             public int compare(Vector<Real> o1, Vector<Real> o2) {
                 int res = 0;
-                if(curDirection.times(o1).doubleValue() <= 0
-                        && curDirection.times(o2).doubleValue() > 0) {
+                if(currentVarParams.curDirection.times(o1).doubleValue() <= 0
+                        && currentVarParams.curDirection.times(o2).doubleValue() > 0) {
                     res = -1;
-                } else if (curDirection.times(o2).doubleValue() <= 0
-                        && curDirection.times(o1).doubleValue() > 0) {
+                } else if (currentVarParams.curDirection.times(o2).doubleValue() <= 0
+                        && currentVarParams.curDirection.times(o1).doubleValue() > 0) {
                     res = 1;
                 }
 
@@ -217,7 +226,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
             @Override
             public Double apply(Vector<Real> realVector) {
                 Real gamma = realVector.get(0);
-                return func.apply(x.minus(curDirection.times(gamma)));
+                return func.apply(x.minus(currentVarParams.curDirection.times(gamma)));
             }
         };
         double[] searchRange = {-10, 10};
@@ -234,42 +243,26 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 //------------------------------------------------ inner -----------------------------------------------------------
 
     private class M1Stopping extends StopCriteria{
-        private final Queue<Double> DEFAULT_EK = new LinkedList<>();
-        private final Queue<Double> DEFAULT_MK = new LinkedList<>();
 
         private StopCriteria baseStopping;
-        private double curSum = 0;
-        private Queue<Double> ek; // parameters for evaluation loop1 criteria
-        private Queue<Double> mk; // parameters for evaluation loop2 criteria
 
-        int i = 0;
-        int qk = 0;
 
-        private final String ekStr;
-        private final String mkStr;
-
-        public M1Stopping(Queue<Double> ek, Queue<Double> mk){
-            this.ek = ek;
-            this.mk = mk;
-            ekStr = ek.toString();
-            mkStr = mk.toString();
+        public M1Stopping(){
         }
 
 
-        public M1Stopping(Queue<Double> ek, Queue<Double> mk, StopCriteria baseStopping){
-            this.ek = ek;
-            this.mk = mk;
-            ekStr = ek.toString();
-            mkStr = mk.toString();
+        public M1Stopping(StopCriteria baseStopping){
             this.baseStopping = baseStopping;
         }
 
         @Override
         protected boolean specifiedCriteria(OptimizationProcedure optimizationProcedure) {
-            if (done || ek.isEmpty() || mk.isEmpty()) return true;
-            guideAlgorithm();
+            if (optimizationProcedure.getAlgoVarParams().done
+                    || optimizationProcedure.getAlgoVarParams().ek.isEmpty()
+                    || optimizationProcedure.getAlgoVarParams().mk.isEmpty()) return true;
+            guideAlgorithm(optimizationProcedure);
             boolean baseCriteria = !(baseStopping == null) && baseStopping.isAchieved(optimizationProcedure);
-            return done || baseCriteria;
+            return optimizationProcedure.getAlgoVarParams().done || baseCriteria;
         }
 
         @Override
@@ -279,24 +272,45 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
         @Override
         protected String printParams() {
-            return "mk = " + mkStr
-                    + "; ek = " + ekStr
+            return "mk = " + guideParams.mk.toString()
+                    + "; ek = " + guideParams.ek.toString()
                     + "; baseStopping = " + baseStopping.toString();
         }
 
-        private void guideAlgorithm() {
-            i++;
-            Double epsK = ek.peek();
-            Double mK = mk.peek();
-            curSum += 1/(prevGradient.times(prevGradient).doubleValue());
-            if (1/Math.sqrt(curSum) < epsK
-                    || (i - qk > mK) ) {
-                anew = true;
-                qk = i;
-                ek.remove();
-                mk.remove();
-            } else anew = false;
+        private void guideAlgorithm(OptimizationProcedure optimizationProcedure) {
+            optimizationProcedure.getAlgoVarParams().i++;
+            Double epsK = optimizationProcedure.getAlgoVarParams().ek.peek();
+            Double mK = optimizationProcedure.getAlgoVarParams().mk.peek();
+            optimizationProcedure.getAlgoVarParams().curSum += 1 /(optimizationProcedure.getAlgoVarParams().prevGradient
+                    .times(optimizationProcedure.getAlgoVarParams().prevGradient).doubleValue());
+            if (1/Math.sqrt(optimizationProcedure.getAlgoVarParams().curSum) < epsK
+                    || (optimizationProcedure.getAlgoVarParams().i - optimizationProcedure.getAlgoVarParams().qk > mK) ) {
+                optimizationProcedure.getAlgoVarParams().anew = true;
+                optimizationProcedure.getAlgoVarParams().qk = optimizationProcedure.getAlgoVarParams().i;
+                optimizationProcedure.getAlgoVarParams().ek.remove();
+                optimizationProcedure.getAlgoVarParams().mk.remove();
+            } else optimizationProcedure.getAlgoVarParams().anew = false;
         }
+        //--------------------------------------------------------------------------------------------------------------
+
+
+        public GuideParameters getGuideParams() {
+            return guideParams;
+        }
+
+        public StopCriteria getBaseStopping() {
+            return baseStopping;
+        }
+
     }
 
+    public class GuideParameters {
+        public final Queue<Double> ek; // parameters for evaluation loop1 criteria
+        public final Queue<Double> mk; // parameters for evaluation loop2 criteria
+
+        public GuideParameters(Queue<Double> ek, Queue<Double> mk) {
+            this.ek = ek;
+            this.mk = mk;
+        }
+    }
 }

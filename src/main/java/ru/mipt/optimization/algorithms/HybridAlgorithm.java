@@ -13,7 +13,7 @@ import java.util.function.Function;
  * i.e. variations of mixed pure algorithms.
  * Created by Inna on 26.02.2017.
  */
-public abstract class HybridAlgorithm extends PureAlgorithm implements Algorithm {
+public abstract class HybridAlgorithm extends PureAlgorithm {
 
     /**
      * Returns the list of pure optimization algorithms to mix in hybrid variation

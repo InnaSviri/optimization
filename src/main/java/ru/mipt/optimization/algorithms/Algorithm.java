@@ -22,10 +22,11 @@ public interface Algorithm{
      *          Note: Must be in the domain of the cost function
      *          otherwise the IllegalArgumentException is thrown
      * @param function the cost function to optimize
+     * @param varParams varying parameters on this iteration of the optimization procedure
      * @return the new value of the argument x on the next iteration of the Algorithm
      * @throws IllegalArgumentException if x is not in the domain of the given cost function
      */
-    public Vector<Real> conductOneIteration (Vector<Real> x, CostFunction function)
+    Vector<Real> conductOneIteration (Vector<Real> x, CostFunction function, VaryingParams varParams)
             throws IllegalArgumentException;
 
     /**
@@ -33,13 +34,13 @@ public interface Algorithm{
      * @param function - function to check
      * @return true if can optimize given cost function false otherwise
      */
-    public boolean isAble(CostFunction function);
+    boolean isAble(CostFunction function);
 
     /**
      * Returns stop criteria of the Algorithm
      * @return stop criteria of the Algorithm
      */
-    public StopCriteria getStopCriteria();
+    StopCriteria getStopCriteria();
 
     /**
      * Configures conditions to stop optimization procedure
@@ -49,25 +50,31 @@ public interface Algorithm{
      * @throws IllegalArgumentException if condition length does not correspond the required one
      * in the concrete implementation.
      */
-    public void configureStopCriteria(double[] errors, boolean... conditions);
+    void configureStopCriteria(double[] errors, boolean... conditions);
 
     /**
      * Configures algorithm parameters. Number of parameters is clarified in concrete implementations.
      * @param params - algorithm parameters. If size of parameters is less than required, rest parameters will be default.
      * @return true if size of parameters correspond required by concrete implementation number.
      */
-    public boolean setParams(double... params);
+    boolean setParams(double... params);
 
     /**
      * Returns the name of the optimization algorithms type
      * @return the name of the optimization algorithms type
      */
-    public String getName();
+    String getName();
 
     /**
      * Prints in String algorithm with its configuration
      * @return String with algorithms configuration
      */
-    public String print();
+    String print();
+
+    /**
+     * Returns configured for this implementation varying parameters
+     * @return configured for this implementation varying parameters or default parameters if they haven't been configured
+     */
+    VaryingParams getVaryingParamsConfiguration();
 
 }

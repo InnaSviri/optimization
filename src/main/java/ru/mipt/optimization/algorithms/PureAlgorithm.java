@@ -20,9 +20,11 @@ public abstract class PureAlgorithm implements Algorithm {
     {setDefaultParameters();}
 
     @Override
-    public Vector<Real> conductOneIteration(Vector<Real> x, CostFunction function) throws IllegalArgumentException {
+    public Vector<Real> conductOneIteration(Vector<Real> x, CostFunction function,
+                                            VaryingParams varPar) throws IllegalArgumentException {
 
-        Vector<Real> res = x.plus(getAlgorithmStep(x,function));
+
+        Vector<Real> res = x.plus(getAlgorithmStep(x,function, varPar));
         if (function.apply(res) == null)
             res = function.getNearestDomainPoint(res, x);
         else res = function.correctToSearchRange(res, x);
@@ -66,8 +68,13 @@ public abstract class PureAlgorithm implements Algorithm {
                 + stopCriteria.toString();
     }
 
+    @Override
+    public VaryingParams getVaryingParamsConfiguration() {
+        return new VaryingParams();
+    }
+
     // returns delta vector to add to the current point x
-    protected abstract Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function);
+    protected abstract Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function, VaryingParams varyingParams);
 
     // prints algorithms configuration parameters
     protected abstract String printParams();

@@ -30,9 +30,9 @@ public class App {
         GradientKaczmarzTraining testtttAlgo = new GradientKaczmarzTraining();
         double[] serchRange = {-1000, 1000};
         Config config = new Config(1, serchRange, testtttAlgo);
-        double[] errors = {0.01, 3, 0.009, 0.01, 0.1, 50, 60, 30};
+        double[] errors = {0.5, 0.01};
         config.configureStopCriteria(errors,true,true,true,true,true,true);
-        config.setAlgorithmParams(1.2,0.5,0.5);
+        config.setAlgorithmParams(3, 0.009, 0.01, 0.1, 50, 60, 30, 1.2,0.5);
 
         Config config1 = new Config();
 
