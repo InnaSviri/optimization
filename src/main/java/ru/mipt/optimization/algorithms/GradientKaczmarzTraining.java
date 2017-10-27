@@ -229,7 +229,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
                 return func.apply(x.minus(currentVarParams.curDirection.times(gamma)));
             }
         };
-        double[] searchRange = {-10, 10};
+        double[] searchRange = {-100, 100};
         Config conf = new Config(0.01, searchRange, oneDimSearchAlgo);
         CostFunction oneDimCost = new UndeterminateCostFunc(f,1,conf);
         OptimizationProcedure optProc = new OptimizationProcedure(oneDimCost, conf);
