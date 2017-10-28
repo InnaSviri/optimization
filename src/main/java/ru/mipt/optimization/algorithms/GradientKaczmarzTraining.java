@@ -190,6 +190,8 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
                 .plus(currentVarParams.curDirection);
         currentVarParams.curDirection = newDirection;
         Double gamma = Math.abs(getOptimizedGamma(x,function));
+        
+        if (gamma == 0.0) gamma = 0.05;// TODO: 28.10.2017 fake 
         currentVarParams.prevGradient = curGrad;
         return newDirection.times(Real.valueOf(-gamma));
     }
