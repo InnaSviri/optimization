@@ -21,17 +21,20 @@ public class CubicApproximation extends PureAlgorithm {
 
     @Override
     protected Vector<Real> getAlgorithmStep(Vector<Real> x, CostFunction function, VaryingParams vp) {
+        vp.i++;
         Vector<Real> x1;
         Real a;
         Real b;
         double fDerX = function.getPartialDerivative(x,0);
+        double i = (vp.i > 3) ? (vp.i/2) : 1;
+        double curStep = h/i;
         if (fDerX<0) {
-            x1 = x.plus(DenseVector.valueOf(Real.valueOf(h)));
+            x1 = x.plus(DenseVector.valueOf(Real.valueOf(curStep)));
             if (function.apply(x1) == null) x1 = function.getNearestDomainPoint(x1,x);
             a = x.get(0);
             b = x1.get(0);
         } else {
-            x1 = x.minus(DenseVector.valueOf(Real.valueOf(h)));
+            x1 = x.minus(DenseVector.valueOf(Real.valueOf(curStep)));
             if (function.apply(x1) == null) x1 = function.getNearestDomainPoint(x1,x);
             b = x.get(0);
             a = x1.get(0);

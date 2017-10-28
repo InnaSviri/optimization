@@ -189,7 +189,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         Vector<Real> newDirection = kaczmarz.getAlgorithmStep(currentVarParams.curDirection, curGrad, getPi(curGrad), Real.ONE)
                 .plus(currentVarParams.curDirection);
         currentVarParams.curDirection = newDirection;
-        Double gamma = getOptimizedGamma(x,function);
+        Double gamma = Math.abs(getOptimizedGamma(x,function));
         currentVarParams.prevGradient = curGrad;
         return newDirection.times(Real.valueOf(-gamma));
     }
