@@ -55,6 +55,7 @@ public class UndeterminateCostFunc extends CostFunction  {
         if (dir < 0 || dir > x.getDimension()-1)
             throw new IllegalArgumentException("Given direction isn't within its bounds!");
 
+        recursionNum = 0;
         Vector<Real> xPlus = addDelta(x,dir);
 
         Double f = apply(x);
@@ -86,7 +87,8 @@ public class UndeterminateCostFunc extends CostFunction  {
         List<Vector<Real>> subgradients = new LinkedList<>();
         Vector<Real> newX = DenseVector.valueOf(x);
         for (int i=0; i<n; i++) {
-            newX = addDelta(x,null);
+            recursionNum = 0;
+            newX = addDelta(newX,null);
             subgradients.add(getGradient(newX));
         }
         return subgradients;
@@ -125,11 +127,14 @@ public class UndeterminateCostFunc extends CostFunction  {
     //adds delta (taken from accuracyOfDomainSearch) to all elements of the vector or if dim != null only to given dimension
     //corrects new point to domain
     private Vector<Real> addDelta(Vector<Real> x, Integer dim) {
+        if (recursionNum > config.getMaxRecursionNumber()) return x;
+        recursionNum++;
+
         Real[] reals = new Real[x.getDimension()];
         for (int i = 0; i < reals.length; i++ )
             if ( (dim != null && i == dim) || dim==null ) reals[i] = x.get(i).plus(Real.valueOf(config.accuracyOfDomainSearch));
             else reals[i] =  x.get(i);
         Vector<Real> xPlus = DenseVector.valueOf(reals);
-        return apply(xPlus) != null ? xPlus: getNearestDomainPoint(xPlus, x);
+        return apply(xPlus) != null ? xPlus: addDelta(xPlus, dim);
     }
 }
