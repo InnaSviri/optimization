@@ -229,7 +229,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
     // TODO: 21.10.2017 not works 
     //returns optimized bu gradient gamma for correction training on the current step
     private Double getOptimizedGamma(Vector<Real> x, CostFunction func) {
-        Function<Vector<Real>, Double> f = new Function<Vector<Real>, Double>() {
+        /*Function<Vector<Real>, Double> f = new Function<Vector<Real>, Double>() {
             @Override
             public Double apply(Vector<Real> realVector) {
                 Real gamma = realVector.get(0);
@@ -242,7 +242,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         OptimizationProcedure optProc = new OptimizationProcedure(oneDimCost, conf);
         Vector<Real> start = MathHelp.getTwinVector(1, Real.ZERO);
         optProc.start(start);
-        Tuple<Vector<Real>, Double> res = optProc.getOptimizedDecision();
+        Tuple<Vector<Real>, Double> res = optProc.getOptimizedDecision();*/
 
         //fake gamma experiment..
         double fakeGamma = step/(currentVarParams.i+1);
