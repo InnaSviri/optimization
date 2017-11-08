@@ -20,11 +20,13 @@ import java.util.function.Function;
  */
 public class GradientKaczmarzTraining extends HybridAlgorithm {
     private static final int MAX_SUBGRAD_NUM = 5;
+    private static final double DEFAULT_STEP = 1;
 
     private Kaczmarz kaczmarz;
     private CubicApproximation oneDimSearchAlgo;
 
     private GuideParameters guideParams;
+    private double step;
 
 
     @Override
@@ -61,12 +63,13 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
     /**
      * Configures algorithm parameters.
-     * @param params - 2k+3 algorithm parameters in the strict order:
+     * @param params - 2k+4 algorithm parameters in the strict order:
      *               k - number of iterations of the outer loop of the algorithm (is used Math.round for convertation);
      *               e1,...,ek - parameters for evaluation outer loop criteria;
      *               m1,...,mk - parameters for evaluation inner loop criteria;
-     *               step - value of the step of the one dimension search algorithm;
+     *               dimensionStep - value of the step of the one dimension search algorithm;
      *               relaxationParameter - value of the step of the direction search algorithm
+     *               step - value of the own algorithm's  step (to multiply by adjustable step gamma)
      *               If size of parameters is less than required, rest parameters will be default.
      * @return true if size of parameters corresponds required 2k+3.
      */
@@ -83,7 +86,8 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
             if (i<k+1) ek.add(params[i]);
             else if (i < 2*k+1) mk.add(params[i]);
             else if (i == 2*k+1) res = res & oneDimSearchAlgo.setParams(params[i]);
-            else res = res && kaczmarz.setParams(params[i]);
+            else if (i == 2*k+2) res = res && kaczmarz.setParams(params[i]);
+            else step = params[i];
             i++;
         }
         if (mk.size() == k && ek.size() == k)
@@ -91,7 +95,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         else if (ek.size() == k)
             guideParams = new GuideParameters(ek, VaryingParams.DEFAULT_MK);
 
-        return i == 2*k+2 && res;
+        return i == 2*k+3 && res;
     }
 
     @Override
@@ -106,6 +110,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         super.setDefaultParameters();
         kaczmarz.setDefaultParameters();
         oneDimSearchAlgo.setDefaultParameters();
+        step = DEFAULT_STEP;
         stopCriteria = createDefaultM1Stopping();
         guideParams = new GuideParameters(VaryingParams.DEFAULT_EK, VaryingParams.DEFAULT_MK);
     }

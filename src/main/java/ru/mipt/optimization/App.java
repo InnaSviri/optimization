@@ -32,7 +32,7 @@ public class App {
         Config config = new Config(1, serchRange, testtttAlgo);
         double[] errors = {0.5, 0.01};
         config.configureStopCriteria(errors,true,true,true,true,true,true);
-        config.setAlgorithmParams(3, 0.009, 0.01, 0.1, 50, 60, 30, 1.2,0.5);
+        config.setAlgorithmParams(3, 0.009, 0.01, 0.1, 50, 60, 30, 1.2,0.5, 1.2);
 
         Config config1 = new Config();
 
