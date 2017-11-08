@@ -243,7 +243,11 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         Vector<Real> start = MathHelp.getTwinVector(1, Real.ZERO);
         optProc.start(start);
         Tuple<Vector<Real>, Double> res = optProc.getOptimizedDecision();
-        return res.x.get(0).doubleValue();
+
+        //fake gamma experiment..
+        double fakeGamma = step/(currentVarParams.i+1);
+
+        return /*res.x.get(0).doubleValue()*/ fakeGamma;
     }
 
 
