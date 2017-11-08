@@ -64,6 +64,8 @@ public class UndeterminateCostFunc extends CostFunction  {
 
         Double fPlus = apply(xPlus);
 
+        if (fPlus == null) fPlus = apply(getNearestDomainPoint(xPlus, x));
+
         double d = fPlus-f;
         if (d == 0) d= 0.00001;
         return d/(config.accuracyOfDomainSearch);
