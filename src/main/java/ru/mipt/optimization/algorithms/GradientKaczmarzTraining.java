@@ -198,7 +198,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         
         if (gamma == 0.0) gamma = 0.05;// TODO: 28.10.2017 fake 
         currentVarParams.prevGradient = curGrad;
-        return newDirection.times(Real.valueOf(-gamma));
+        return newDirection.times(Real.valueOf(-gamma*step));
     }
 
     //returns training vector pi
