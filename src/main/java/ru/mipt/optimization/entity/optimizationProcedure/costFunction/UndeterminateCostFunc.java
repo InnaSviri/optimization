@@ -91,6 +91,7 @@ public class UndeterminateCostFunc extends CostFunction  {
         for (int i=0; i<n; i++) {
             recursionNum = 0;
             newX = addDelta(newX,null);
+            if (apply(newX) == null) newX = getNearestDomainPoint(newX, x);
             subgradients.add(getGradient(newX));
         }
         return subgradients;
@@ -127,7 +128,7 @@ public class UndeterminateCostFunc extends CostFunction  {
     }
 
     //adds delta (taken from accuracyOfDomainSearch) to all elements of the vector or if dim != null only to given dimension
-    //corrects new point to domain
+    //if new point is out of the domain recursivly adds one more delta
     private Vector<Real> addDelta(Vector<Real> x, Integer dim) {
         if (recursionNum > config.getMaxRecursionNumber()) return x;
         recursionNum++;
