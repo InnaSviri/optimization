@@ -39,7 +39,9 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
     @Override
     public VaryingParams getVaryingParamsConfiguration() {
-        return new VaryingParams(guideParams.ek, guideParams.mk);
+        Queue <Double> ekNew = new LinkedList<>(guideParams.ek);
+        Queue <Double> mkNew = new LinkedList<>(guideParams.mk);
+        return new VaryingParams(ekNew, mkNew);
     }
 
     @Override
@@ -181,12 +183,12 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
 
     private Vector<Real> innerLoop(Vector<Real> x, CostFunction function, Vector<Real> si, Vector<Real> gPrev) {
         Vector<Real> curGrad = function.getGradient(x);
-        if (curGrad.equals(MathHelp.getTwinVector(x.getDimension(), Real.ZERO))) {
+        if (isZero(curGrad)) {
             currentVarParams.done = true;
             return x;
         }
         if (currentVarParams.curDirection.times(curGrad).isLargerThan(Real.ZERO)) {
-            List<Vector<Real>> subgradients = function.getSubGradients(x, MAX_SUBGRAD_NUM);
+            List<Vector<Real>> subgradients = function.getSubGradients(x, currentVarParams.ek.peek());
             Collections.sort(subgradients, getSubgradComparator());
             if (!subgradients.isEmpty()) curGrad = subgradients.get(0); //nonetheless required condition may be not fulfilled
         }
@@ -212,16 +214,8 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         return new Comparator<Vector<Real>>() {
             @Override
             public int compare(Vector<Real> o1, Vector<Real> o2) {
-                int res = 0;
-                if(currentVarParams.curDirection.times(o1).doubleValue() <= 0
-                        && currentVarParams.curDirection.times(o2).doubleValue() > 0) {
-                    res = -1;
-                } else if (currentVarParams.curDirection.times(o2).doubleValue() <= 0
-                        && currentVarParams.curDirection.times(o1).doubleValue() > 0) {
-                    res = 1;
-                }
-
-                return res;
+                return Double.compare(currentVarParams.curDirection.times(o1).doubleValue()
+                        ,currentVarParams.curDirection.times(o2).doubleValue());
             }
         };
     }
@@ -250,6 +244,13 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         return /*res.x.get(0).doubleValue()*/ fakeGamma;
     }
 
+    private boolean isZero(Vector<Real> curGrad) {
+        boolean res = curGrad.equals(MathHelp.getTwinVector(curGrad.getDimension(), Real.ZERO));
+        if (!res)
+            for (int i = 0; i< curGrad.getDimension(); i++)
+                if (curGrad.get(i).doubleValue()>0.00001) return res;
+        return true;
+    }
 
 //------------------------------------------------ inner -----------------------------------------------------------
 

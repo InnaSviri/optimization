@@ -105,10 +105,10 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
     /**
      * Retirnes gradients in nearest to x n points
      * @param x - point to calculate subgradients
-     * @param n - number of gradients to calculate
+     * @param area - area to calculate gradients
      * @return gradients in nearest to x n points
      */
-    public abstract List<Vector<Real>> getSubGradients(Vector<Real> x, int n);
+    public abstract List<Vector<Real>> getSubGradients(Vector<Real> x, double area);
 
 
     protected void checkDimension(Vector<Real> toCheck) {

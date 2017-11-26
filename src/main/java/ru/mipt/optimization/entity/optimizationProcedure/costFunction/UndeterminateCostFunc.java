@@ -83,8 +83,10 @@ public class UndeterminateCostFunc extends CostFunction  {
     }
 
     @Override
-    public List<Vector<Real>> getSubGradients(Vector<Real> x, int n) {
+    public List<Vector<Real>> getSubGradients(Vector<Real> x, double area) {
         checkDimension(x);
+
+        int n = (int) (area/config.accuracyOfDomainSearch);
 
         List<Vector<Real>> subgradients = new LinkedList<>();
         Vector<Real> newX = DenseVector.valueOf(x);

@@ -48,7 +48,7 @@ public class DeterminateCostFunc extends CostFunction {
     }
 
     @Override
-    public List<Vector<Real>> getSubGradients(Vector<Real> x, int n) {
+    public List<Vector<Real>> getSubGradients(Vector<Real> x, double area) {
         // TODO: 21.10.2017 realize
         return null;
     }
