@@ -44,7 +44,7 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
     }
 
     /**
-     * Returns given point with corrected to the search range elements
+     * Returns given point with corrected to the search range and search accuracy elements
      * @param toCorrect - point to correct
      * @param directionPoint - direction point to correct given point in the given direction.
      *                       If is null returned point would not be checked on belonging to the domain.
@@ -59,14 +59,17 @@ public abstract class CostFunction implements Function<Vector<Real>, Double> {
         return res;
     }
 
-    //corrects to the search range without domain check
+    //corrects to the search range and accuracy without domain check
     protected Vector<Real> correctToSearchRange(Vector<Real> out) {
         Real[] toWrite = new Real[out.getDimension()];
         for (int i = 0; i<out.getDimension(); i++) {
             if (out.get(i).doubleValue() < config.searchRange[0]) {
                 toWrite[i] = Real.valueOf(config.searchRange[0]);
-            } else if (out.get(i).doubleValue()>config.searchRange[1]) {
+            } else if (out.get(i).doubleValue() > config.searchRange[1]) {
                 toWrite[i] = Real.valueOf(config.searchRange[1]);
+            } else if(Math.abs(out.get(i).doubleValue()) < config.accuracyOfDomainSearch) {
+                double coef = out.get(i).isNegative() ? -0.4: 0.4;
+                toWrite[i] = Real.valueOf(coef * config.accuracyOfDomainSearch);
             } else toWrite[i] = out.get(i);
         }
         return DenseVector.valueOf(toWrite);

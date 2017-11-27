@@ -248,7 +248,7 @@ public class GradientKaczmarzTraining extends HybridAlgorithm {
         boolean res = curGrad.equals(MathHelp.getTwinVector(curGrad.getDimension(), Real.ZERO));
         if (!res)
             for (int i = 0; i< curGrad.getDimension(); i++)
-                if (curGrad.get(i).doubleValue()>0.00001) return res;
+                if (Math.abs(curGrad.get(i).doubleValue())>0.00001) return res;
         return true;
     }
 
